@@ -1,33 +1,28 @@
 package com.heshten.chess.core.logic.movecheckers
 
+import com.heshten.chess.core.logic.Board
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 
-class HorizontalMovesChecker : MoveChecker() {
+class HorizontalMovesChecker(board: Board) : MoveChecker(board) {
 
-    override fun getPossibleMoves(piece: Piece, boardPieces: Set<Piece>): Set<BoardPosition> {
+    override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
         if (!piece.canMoveHorizontally()) {
             return emptySet()
         }
-        return getPossibleHorizontalMoves(piece, boardPieces)
+        return getPossibleHorizontalMoves(piece)
     }
 
-    private fun getPossibleHorizontalMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getPossibleHorizontalMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
-        val rightSideMoves = getRightSidePossibleMoves(piece, boardPieces)
-        val leftSideMoves = getLeftSidePossibleMoves(piece, boardPieces)
+        val rightSideMoves = getRightSidePossibleMoves(piece)
+        val leftSideMoves = getLeftSidePossibleMoves(piece)
         possibleMoves.addAll(rightSideMoves)
         possibleMoves.addAll(leftSideMoves)
         return possibleMoves
     }
 
-    private fun getRightSidePossibleMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getRightSidePossibleMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val rowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
@@ -36,7 +31,7 @@ class HorizontalMovesChecker : MoveChecker() {
                 return possibleMoves
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
-            if (!hasPieceOnPosition(nextBoardPosition, boardPieces)) {
+            if (!board.hasPieceAtPosition(nextBoardPosition)) {
                 possibleMoves.add(nextBoardPosition)
             } else {
                 return possibleMoves
@@ -45,10 +40,7 @@ class HorizontalMovesChecker : MoveChecker() {
         return possibleMoves
     }
 
-    private fun getLeftSidePossibleMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getLeftSidePossibleMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val rowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
@@ -57,7 +49,7 @@ class HorizontalMovesChecker : MoveChecker() {
                 return possibleMoves
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
-            if (!hasPieceOnPosition(nextBoardPosition, boardPieces)) {
+            if (!board.hasPieceAtPosition(nextBoardPosition)) {
                 possibleMoves.add(nextBoardPosition)
             } else {
                 return possibleMoves

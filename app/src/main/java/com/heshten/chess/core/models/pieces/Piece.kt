@@ -6,6 +6,7 @@ import com.heshten.chess.core.models.helpers.*
 
 abstract class Piece(
     val bitmap: Bitmap,
+    private val pieceSide: PieceSide,
     private var boardPosition: BoardPosition
 ) : MoveHelper, TakeHelper, DirectionHelper, StepHelper {
 
@@ -17,7 +18,6 @@ abstract class Piece(
 
     override fun canMoveKnightLike(): Boolean = false
 
-
     override fun canTakeVertically(): Boolean = false
 
     override fun canTakeHorizontally(): Boolean = false
@@ -28,15 +28,18 @@ abstract class Piece(
 
     override fun pieceDirection(): MoveDirection = MoveDirection.BOTH
 
-
     override fun maxSteps(): Int = 8
-
-    open fun moveTo(position: BoardPosition) {
-        boardPosition = position
-    }
 
     fun getCurrentPosition(): BoardPosition {
         return boardPosition.copy()
+    }
+
+    fun isDifferentSidePieces(targetPiece: Piece): Boolean {
+        return pieceSide != targetPiece.pieceSide
+    }
+
+    open fun moveTo(position: BoardPosition) {
+        boardPosition = position
     }
 
 }

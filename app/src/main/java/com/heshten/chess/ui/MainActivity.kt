@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.heshten.chess.R
+import com.heshten.chess.core.logic.Board
 import com.heshten.chess.core.logic.Game
 import com.heshten.chess.core.logic.movecheckers.DiagonalMovesChecker
 import com.heshten.chess.core.logic.movecheckers.HorizontalMovesChecker
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initGame(resources)
         setListeners()
     }
 
@@ -37,21 +37,24 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
 
     private fun setListeners() {
         boardView.setPieceSelectListener(this)
-        btnNewGame.setOnClickListener { game.start() }
+        btnNewGame.setOnClickListener {
+            initGame(resources)
+            game.start()
+        }
     }
 
     private fun initGame(resources: Resources) {
         //di
         val blackPiecesResourceProvider = BlackPiecesResourceProvider(resources)
         val whitePiecesResourceProvider = WhitePiecesResourceProvider(resources)
-        val horizontalMovesChecker = HorizontalMovesChecker()
-        val verticalMovesChecker = VerticalMovesChecker()
-        val diagonalMovesChecker = DiagonalMovesChecker()
-        val knightLikeMovesChecker = KnightLikeMovesChecker()
+        val board = Board(whitePiecesResourceProvider, blackPiecesResourceProvider)
+        val horizontalMovesChecker = HorizontalMovesChecker(board)
+        val knightLikeMovesChecker = KnightLikeMovesChecker(board)
+        val verticalMovesChecker = VerticalMovesChecker(board)
+        val diagonalMovesChecker = DiagonalMovesChecker(board)
         //create instance
-        game = Game(blackPiecesResourceProvider, whitePiecesResourceProvider,
-            verticalMovesChecker, horizontalMovesChecker, diagonalMovesChecker,
-            knightLikeMovesChecker, boardView
+        game = Game(board, verticalMovesChecker, horizontalMovesChecker,
+            diagonalMovesChecker, knightLikeMovesChecker, boardView
         )
     }
 

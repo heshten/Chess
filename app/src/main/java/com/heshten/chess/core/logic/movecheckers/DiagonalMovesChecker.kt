@@ -1,26 +1,24 @@
 package com.heshten.chess.core.logic.movecheckers
 
+import com.heshten.chess.core.logic.Board
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 
-class DiagonalMovesChecker : MoveChecker() {
+class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
 
-    override fun getPossibleMoves(piece: Piece, boardPieces: Set<Piece>): Set<BoardPosition> {
+    override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
         if (!piece.canMoveDiagonally()) {
             return emptySet()
         }
-        return getPossibleDiagonallyMoves(piece, boardPieces)
+        return getPossibleDiagonallyMoves(piece)
     }
 
-    private fun getPossibleDiagonallyMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getPossibleDiagonallyMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
-        val leftUpPossibleMoves = getLeftUpPossibleMoves(piece, boardPieces)
-        val rightUpPossibleMoves = getRightUpPossibleMoves(piece, boardPieces)
-        val leftDownPossibleMoves = getLeftDownPossibleMoves(piece, boardPieces)
-        val rightDownPossibleMoves = getRightDownPossibleMoves(piece, boardPieces)
+        val leftUpPossibleMoves = getLeftUpPossibleMoves(piece)
+        val rightUpPossibleMoves = getRightUpPossibleMoves(piece)
+        val leftDownPossibleMoves = getLeftDownPossibleMoves(piece)
+        val rightDownPossibleMoves = getRightDownPossibleMoves(piece)
         possibleMoves.addAll(leftUpPossibleMoves)
         possibleMoves.addAll(rightUpPossibleMoves)
         possibleMoves.addAll(leftDownPossibleMoves)
@@ -28,10 +26,7 @@ class DiagonalMovesChecker : MoveChecker() {
         return possibleMoves
     }
 
-    private fun getLeftUpPossibleMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getLeftUpPossibleMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val startRowIndex = piece.getCurrentPosition().rowIndex - 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
@@ -41,7 +36,7 @@ class DiagonalMovesChecker : MoveChecker() {
             }
             val nextValidLeftUpPosition =
                 BoardPosition(startRowIndex - shift, startColumnIndex - shift)
-            if (!hasPieceOnPosition(nextValidLeftUpPosition, boardPieces)) {
+            if (!board.hasPieceAtPosition(nextValidLeftUpPosition)) {
                 possibleMoves.add(nextValidLeftUpPosition)
             } else {
                 return possibleMoves
@@ -50,10 +45,7 @@ class DiagonalMovesChecker : MoveChecker() {
         return possibleMoves
     }
 
-    private fun getRightUpPossibleMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getRightUpPossibleMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val startRowIndex = piece.getCurrentPosition().rowIndex - 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
@@ -63,7 +55,7 @@ class DiagonalMovesChecker : MoveChecker() {
             }
             val nextValidRightUpPosition =
                 BoardPosition(startRowIndex - shift, startColumnIndex + shift)
-            if (!hasPieceOnPosition(nextValidRightUpPosition, boardPieces)) {
+            if (!board.hasPieceAtPosition(nextValidRightUpPosition)) {
                 possibleMoves.add(nextValidRightUpPosition)
             } else {
                 return possibleMoves
@@ -72,10 +64,7 @@ class DiagonalMovesChecker : MoveChecker() {
         return possibleMoves
     }
 
-    private fun getLeftDownPossibleMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getLeftDownPossibleMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val startRowIndex = piece.getCurrentPosition().rowIndex + 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
@@ -85,7 +74,7 @@ class DiagonalMovesChecker : MoveChecker() {
             }
             val nextValidLeftDownPosition =
                 BoardPosition(startRowIndex + shift, startColumnIndex - shift)
-            if (!hasPieceOnPosition(nextValidLeftDownPosition, boardPieces)) {
+            if (!board.hasPieceAtPosition(nextValidLeftDownPosition)) {
                 possibleMoves.add(nextValidLeftDownPosition)
             } else {
                 return possibleMoves
@@ -94,10 +83,7 @@ class DiagonalMovesChecker : MoveChecker() {
         return possibleMoves
     }
 
-    private fun getRightDownPossibleMoves(
-        piece: Piece,
-        boardPieces: Set<Piece>
-    ): Set<BoardPosition> {
+    private fun getRightDownPossibleMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val startRowIndex = piece.getCurrentPosition().rowIndex + 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
@@ -107,7 +93,7 @@ class DiagonalMovesChecker : MoveChecker() {
             }
             val nextValidRightDownPosition =
                 BoardPosition(startRowIndex + shift, startColumnIndex + shift)
-            if (!hasPieceOnPosition(nextValidRightDownPosition, boardPieces)) {
+            if (!board.hasPieceAtPosition(nextValidRightDownPosition)) {
                 possibleMoves.add(nextValidRightDownPosition)
             } else {
                 return possibleMoves

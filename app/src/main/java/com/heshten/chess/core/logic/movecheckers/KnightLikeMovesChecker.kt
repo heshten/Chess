@@ -1,18 +1,19 @@
 package com.heshten.chess.core.logic.movecheckers
 
+import com.heshten.chess.core.logic.Board
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 
-class KnightLikeMovesChecker : MoveChecker() {
+class KnightLikeMovesChecker(board: Board) : MoveChecker(board) {
 
-    override fun getPossibleMoves(piece: Piece, boardPieces: Set<Piece>): Set<BoardPosition> {
+    override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
         if (!piece.canMoveKnightLike()) {
             return emptySet()
         }
-        return getKnightLikePossibleMoves(piece, boardPieces)
+        return getKnightLikePossibleMoves(piece)
     }
 
-    private fun getKnightLikePossibleMoves(piece: Piece, boardPieces: Set<Piece>): Set<BoardPosition> {
+    private fun getKnightLikePossibleMoves(piece: Piece): Set<BoardPosition> {
         val possiblePositions = mutableSetOf<BoardPosition>()
         val startRowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex
@@ -24,23 +25,22 @@ class KnightLikeMovesChecker : MoveChecker() {
         val rightDownPosition = BoardPosition(startRowIndex + 1, startColumnIndex + 2)
         val bottomLeftPosition = BoardPosition(startRowIndex + 2, startColumnIndex - 1)
         val bottomRightPosition = BoardPosition(startRowIndex + 2, startColumnIndex + 1)
-        maybeAddPossiblePosition(upLeftPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(upRightPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(leftUpPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(leftDownPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(rightUpPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(rightDownPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(bottomLeftPosition, possiblePositions, boardPieces)
-        maybeAddPossiblePosition(bottomRightPosition, possiblePositions, boardPieces)
+        maybeAddPossiblePosition(upLeftPosition, possiblePositions)
+        maybeAddPossiblePosition(upRightPosition, possiblePositions)
+        maybeAddPossiblePosition(leftUpPosition, possiblePositions)
+        maybeAddPossiblePosition(leftDownPosition, possiblePositions)
+        maybeAddPossiblePosition(rightUpPosition, possiblePositions)
+        maybeAddPossiblePosition(rightDownPosition, possiblePositions)
+        maybeAddPossiblePosition(bottomLeftPosition, possiblePositions)
+        maybeAddPossiblePosition(bottomRightPosition, possiblePositions)
         return possiblePositions
     }
 
     private fun maybeAddPossiblePosition(
         possiblePosition: BoardPosition,
-        possibleMovesContainer: MutableSet<BoardPosition>,
-        boardPieces: Set<Piece>
+        possibleMovesContainer: MutableSet<BoardPosition>
     ) {
-        if (!hasPieceOnPosition(possiblePosition, boardPieces)) {
+        if (!board.hasPieceAtPosition(possiblePosition)) {
             possibleMovesContainer.add(possiblePosition)
         }
     }
