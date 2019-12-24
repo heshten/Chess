@@ -14,4 +14,8 @@ class Rook(
 
     override fun canMoveHorizontally(): Boolean = true
 
+    override fun canTakeHorizontally(): Boolean = true
+
+    override fun canTakeVertically(): Boolean = true
+
 }

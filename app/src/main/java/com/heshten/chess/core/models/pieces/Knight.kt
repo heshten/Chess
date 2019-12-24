@@ -13,4 +13,6 @@ class Knight(
 
     override fun canMoveKnightLike(): Boolean = true
 
+    override fun canTakeKnightLike(): Boolean = true
+
 }

@@ -37,6 +37,9 @@ class VerticalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextVerticalPosition)) {
                 possibleMoves.add(nextVerticalPosition)
             } else {
+                if (isDifferent(piece, nextVerticalPosition) && piece.canTakeVertically()) {
+                    possibleMoves.add(nextVerticalPosition)
+                }
                 return possibleMoves
             }
         }
@@ -55,6 +58,9 @@ class VerticalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextVerticalPosition)) {
                 possibleMoves.add(nextVerticalPosition)
             } else {
+                if (isDifferent(piece, nextVerticalPosition) && piece.canTakeVertically()) {
+                    possibleMoves.add(nextVerticalPosition)
+                }
                 return possibleMoves
             }
         }

@@ -15,7 +15,11 @@ class Board(private val whitePiecesResourceProvider: PieceResourceProvider,
     val selectedPositions = mutableSetOf<BoardPosition>()
 
     fun hasPieceAtPosition(boardPosition: BoardPosition): Boolean {
-        return pieces.find { it.getCurrentPosition() == boardPosition } != null
+        return getPieceForPosition(boardPosition) != null
+    }
+
+    fun getPieceForPosition(boardPosition: BoardPosition): Piece? {
+        return pieces.find { it.getCurrentPosition() == boardPosition }
     }
 
     fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {

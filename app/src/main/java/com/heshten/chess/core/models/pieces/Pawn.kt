@@ -16,11 +16,13 @@ class Pawn(
 
     override fun canMoveVertically(): Boolean = true
 
+    override fun canTakeDiagonally(): Boolean = true
+
     override fun pieceDirection(): MoveDirection = moveDirection
 
     override fun maxSteps(): Int = when (firstStepPerformed) {
         true -> 1
-        else -> 2
+        false -> 2
     }
 
     override fun moveTo(position: BoardPosition) {

@@ -39,6 +39,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextValidLeftUpPosition)) {
                 possibleMoves.add(nextValidLeftUpPosition)
             } else {
+                if (isDifferent(piece, nextValidLeftUpPosition) && piece.canTakeDiagonally()) {
+                    possibleMoves.add(nextValidLeftUpPosition)
+                }
                 return possibleMoves
             }
         }
@@ -58,6 +61,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextValidRightUpPosition)) {
                 possibleMoves.add(nextValidRightUpPosition)
             } else {
+                if (isDifferent(piece, nextValidRightUpPosition) && piece.canTakeDiagonally()) {
+                    possibleMoves.add(nextValidRightUpPosition)
+                }
                 return possibleMoves
             }
         }
@@ -77,6 +83,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextValidLeftDownPosition)) {
                 possibleMoves.add(nextValidLeftDownPosition)
             } else {
+                if (isDifferent(piece, nextValidLeftDownPosition) && piece.canTakeDiagonally()) {
+                    possibleMoves.add(nextValidLeftDownPosition)
+                }
                 return possibleMoves
             }
         }
@@ -96,6 +105,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextValidRightDownPosition)) {
                 possibleMoves.add(nextValidRightDownPosition)
             } else {
+                if (isDifferent(piece, nextValidRightDownPosition) && piece.canTakeDiagonally()) {
+                    possibleMoves.add(nextValidRightDownPosition)
+                }
                 return possibleMoves
             }
         }

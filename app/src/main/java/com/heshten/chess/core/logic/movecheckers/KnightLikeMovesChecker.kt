@@ -25,22 +25,25 @@ class KnightLikeMovesChecker(board: Board) : MoveChecker(board) {
         val rightDownPosition = BoardPosition(startRowIndex + 1, startColumnIndex + 2)
         val bottomLeftPosition = BoardPosition(startRowIndex + 2, startColumnIndex - 1)
         val bottomRightPosition = BoardPosition(startRowIndex + 2, startColumnIndex + 1)
-        maybeAddPossiblePosition(upLeftPosition, possiblePositions)
-        maybeAddPossiblePosition(upRightPosition, possiblePositions)
-        maybeAddPossiblePosition(leftUpPosition, possiblePositions)
-        maybeAddPossiblePosition(leftDownPosition, possiblePositions)
-        maybeAddPossiblePosition(rightUpPosition, possiblePositions)
-        maybeAddPossiblePosition(rightDownPosition, possiblePositions)
-        maybeAddPossiblePosition(bottomLeftPosition, possiblePositions)
-        maybeAddPossiblePosition(bottomRightPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, upLeftPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, upRightPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, leftUpPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, leftDownPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, rightUpPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, rightDownPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, bottomLeftPosition, possiblePositions)
+        maybeAddPossiblePosition(piece, bottomRightPosition, possiblePositions)
         return possiblePositions
     }
 
     private fun maybeAddPossiblePosition(
+        piece: Piece,
         possiblePosition: BoardPosition,
         possibleMovesContainer: MutableSet<BoardPosition>
     ) {
         if (!board.hasPieceAtPosition(possiblePosition)) {
+            possibleMovesContainer.add(possiblePosition)
+        } else if (isDifferent(piece, possiblePosition) && piece.canTakeKnightLike()) {
             possibleMovesContainer.add(possiblePosition)
         }
     }

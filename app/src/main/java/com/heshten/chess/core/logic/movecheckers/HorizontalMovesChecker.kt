@@ -34,6 +34,9 @@ class HorizontalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextBoardPosition)) {
                 possibleMoves.add(nextBoardPosition)
             } else {
+                if (isDifferent(piece, nextBoardPosition) && piece.canTakeHorizontally()) {
+                    possibleMoves.add(nextBoardPosition)
+                }
                 return possibleMoves
             }
         }
@@ -52,6 +55,9 @@ class HorizontalMovesChecker(board: Board) : MoveChecker(board) {
             if (!board.hasPieceAtPosition(nextBoardPosition)) {
                 possibleMoves.add(nextBoardPosition)
             } else {
+                if (isDifferent(piece, nextBoardPosition) && piece.canTakeHorizontally()) {
+                    possibleMoves.add(nextBoardPosition)
+                }
                 return possibleMoves
             }
         }

@@ -12,4 +12,6 @@ class Bishop(
 
     override fun canMoveDiagonally(): Boolean = true
 
+    override fun canTakeDiagonally(): Boolean = true
+
 }

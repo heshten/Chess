@@ -16,6 +16,12 @@ class King(
 
     override fun canMoveDiagonally(): Boolean = true
 
+    override fun canTakeVertically(): Boolean = true
+
+    override fun canTakeDiagonally(): Boolean = true
+
+    override fun canTakeHorizontally(): Boolean = true
+
     override fun maxSteps(): Int = 1
 
 }
