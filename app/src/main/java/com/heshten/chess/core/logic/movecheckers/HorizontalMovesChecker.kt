@@ -32,7 +32,7 @@ class HorizontalMovesChecker : MoveChecker() {
         val rowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
         (startColumnIndex until 8).forEachIndexed { step, columnIndex ->
-            if (step > piece.maxSteps()) {
+            if (step >= piece.maxSteps()) {
                 return possibleMoves
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
@@ -53,7 +53,7 @@ class HorizontalMovesChecker : MoveChecker() {
         val rowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
         (startColumnIndex downTo 0).forEachIndexed { step, columnIndex ->
-            if (step > piece.maxSteps()) {
+            if (step >= piece.maxSteps()) {
                 return possibleMoves
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)

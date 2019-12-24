@@ -36,7 +36,7 @@ class DiagonalMovesChecker : MoveChecker() {
         val startRowIndex = piece.getCurrentPosition().rowIndex - 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step > piece.maxSteps()) {
+            if (step >= piece.maxSteps()) {
                 return possibleMoves
             }
             val nextValidLeftUpPosition =
@@ -58,7 +58,7 @@ class DiagonalMovesChecker : MoveChecker() {
         val startRowIndex = piece.getCurrentPosition().rowIndex - 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step > piece.maxSteps()) {
+            if (step >= piece.maxSteps()) {
                 return possibleMoves
             }
             val nextValidRightUpPosition =
@@ -80,7 +80,7 @@ class DiagonalMovesChecker : MoveChecker() {
         val startRowIndex = piece.getCurrentPosition().rowIndex + 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step > piece.maxSteps()) {
+            if (step >= piece.maxSteps()) {
                 return possibleMoves
             }
             val nextValidLeftDownPosition =
@@ -102,7 +102,7 @@ class DiagonalMovesChecker : MoveChecker() {
         val startRowIndex = piece.getCurrentPosition().rowIndex + 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step > piece.maxSteps()) {
+            if (step >= piece.maxSteps()) {
                 return possibleMoves
             }
             val nextValidRightDownPosition =
