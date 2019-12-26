@@ -1,34 +1,18 @@
 package com.heshten.chess.core.models.pieces
 
 import android.graphics.Bitmap
+import androidx.annotation.CallSuper
 import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.helpers.*
+import com.heshten.chess.core.models.PieceSide
+import com.heshten.chess.core.models.markers.MoveMarker
+import com.heshten.chess.core.models.markers.StepMarker
+import com.heshten.chess.core.models.markers.TakeMarker
 
 abstract class Piece(
     val bitmap: Bitmap,
     private val pieceSide: PieceSide,
     private var boardPosition: BoardPosition
-) : MoveHelper, TakeHelper, DirectionHelper, StepHelper {
-
-    override fun canMoveVertically(): Boolean = false
-
-    override fun canMoveHorizontally(): Boolean = false
-
-    override fun canMoveDiagonally(): Boolean = false
-
-    override fun canMoveKnightLike(): Boolean = false
-
-    override fun canTakeVertically(): Boolean = false
-
-    override fun canTakeHorizontally(): Boolean = false
-
-    override fun canTakeDiagonally(): Boolean = false
-
-    override fun canTakeKnightLike(): Boolean = false
-
-    override fun pieceDirection(): MoveDirection = MoveDirection.BOTH
-
-    override fun maxSteps(): Int = 8
+) : MoveMarker, TakeMarker, StepMarker {
 
     fun getCurrentPosition(): BoardPosition {
         return boardPosition.copy()
@@ -38,6 +22,7 @@ abstract class Piece(
         return pieceSide != otherPiece.pieceSide
     }
 
+    @CallSuper
     open fun moveTo(position: BoardPosition) {
         boardPosition = position
     }

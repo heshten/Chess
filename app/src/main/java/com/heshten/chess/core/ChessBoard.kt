@@ -1,8 +1,8 @@
 package com.heshten.chess.core
 
 import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.helpers.MoveDirection
-import com.heshten.chess.core.models.helpers.PieceSide
+import com.heshten.chess.core.models.MoveDirection
+import com.heshten.chess.core.models.PieceSide
 import com.heshten.chess.core.models.pieces.*
 import com.heshten.chess.core.recources.PieceResourceProvider
 

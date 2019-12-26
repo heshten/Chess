@@ -39,11 +39,9 @@ class KnightLikeTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         possiblePosition: BoardPosition,
         possibleTakesContainer: MutableSet<BoardPosition>
     ) {
-        if (chessBoard.hasPieceAtPosition(possiblePosition)) {
-            val nextPiece = chessBoard.getPieceForPosition(possiblePosition)
-            if (nextPiece?.isOpposite(piece) == true) {
-                possibleTakesContainer.add(possiblePosition)
-            }
+        val nextPiece = chessBoard.getPieceForPosition(possiblePosition)
+        if (nextPiece != null && nextPiece.isOpposite(piece)) {
+            possibleTakesContainer.add(possiblePosition)
         }
     }
 }

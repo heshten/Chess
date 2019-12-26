@@ -1,8 +1,9 @@
-package com.heshten.chess.core.models.helpers
+package com.heshten.chess.core.models.markers
 
-interface TakeHelper {
+interface TakeMarker {
     fun canTakeVertically(): Boolean
     fun canTakeHorizontally(): Boolean
     fun canTakeDiagonally(): Boolean
     fun canTakeKnightLike(): Boolean
+    fun canTakeBehind(): Boolean
 }
