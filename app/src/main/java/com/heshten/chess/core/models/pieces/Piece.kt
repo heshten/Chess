@@ -34,8 +34,8 @@ abstract class Piece(
         return boardPosition.copy()
     }
 
-    fun isDifferentSidePieces(targetPiece: Piece): Boolean {
-        return pieceSide != targetPiece.pieceSide
+    fun isOpposite(otherPiece: Piece): Boolean {
+        return pieceSide != otherPiece.pieceSide
     }
 
     open fun moveTo(position: BoardPosition) {

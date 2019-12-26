@@ -8,10 +8,10 @@ import com.heshten.chess.core.models.pieces.Piece
 class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
     override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-        return getPossibleDiagonallyMoves(piece)
+        return getPossibleDiagonalMoves(piece)
     }
 
-    private fun getPossibleDiagonallyMoves(piece: Piece): Set<BoardPosition> {
+    private fun getPossibleDiagonalMoves(piece: Piece): Set<BoardPosition> {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val leftUpPossibleMoves = getLeftUpPossibleMoves(piece)
         val rightUpPossibleMoves = getRightUpPossibleMoves(piece)

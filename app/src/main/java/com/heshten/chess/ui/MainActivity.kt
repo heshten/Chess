@@ -58,10 +58,10 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
         val knightLikeMovesChecker = KnightLikeMovesChecker(board)
         val verticalMovesChecker = VerticalMovesChecker(board)
         val diagonalMovesChecker = DiagonalMovesChecker(board)
-        val horizontalTakesChecker = HorizontalTakeChecker()
-        val knightLikeTakesChecker = KnightLikeTakeChecker()
-        val verticalTakesChecker = VerticalTakeChecker()
-        val diagonalTakesChecker = DiagonalTakeChecker()
+        val horizontalTakesChecker = HorizontalTakeChecker(board)
+        val knightLikeTakesChecker = KnightLikeTakeChecker(board)
+        val verticalTakesChecker = VerticalTakeChecker(board)
+        val diagonalTakesChecker = DiagonalTakeChecker(board)
         val moveCheckerFacade = MoveCheckerFacade(
             horizontalMovesChecker,
             verticalMovesChecker,

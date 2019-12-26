@@ -3,24 +3,21 @@ package com.heshten.chess.core.logic.movecheckers
 import com.heshten.chess.core.ChessBoard
 import com.heshten.chess.core.logic.MoveChecker
 import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.helpers.MoveDirection
 import com.heshten.chess.core.models.pieces.Piece
 
 class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
     override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-        return when (piece.pieceDirection()) {
-            MoveDirection.UP -> getPossibleVerticalUpMoves(piece)
-            MoveDirection.DOWN -> getPossibleVerticalDownMoves(piece)
-            MoveDirection.BOTH -> {
-                val possibleUpMoves = getPossibleVerticalUpMoves(piece)
-                val possibleDownMoves = getPossibleVerticalDownMoves(piece)
-                val mergedSet = mutableSetOf<BoardPosition>()
-                mergedSet.addAll(possibleUpMoves)
-                mergedSet.addAll(possibleDownMoves)
-                return mergedSet
-            }
-        }
+        return getPossibleVerticalMoves(piece)
+    }
+
+    private fun getPossibleVerticalMoves(piece: Piece): Set<BoardPosition> {
+        val possibleMoves = mutableSetOf<BoardPosition>()
+        val possibleUpMoves = getPossibleVerticalUpMoves(piece)
+        val possibleDownMoves = getPossibleVerticalDownMoves(piece)
+        possibleMoves.addAll(possibleUpMoves)
+        possibleMoves.addAll(possibleDownMoves)
+        return possibleMoves
     }
 
     private fun getPossibleVerticalUpMoves(piece: Piece): Set<BoardPosition> {
