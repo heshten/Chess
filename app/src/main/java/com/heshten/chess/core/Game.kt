@@ -35,8 +35,7 @@ class Game(
     }
 
     private fun redrawBoard() {
-        boardView.setPieces(chessBoard.pieces)
-        boardView.setSelectedPositions(chessBoard.selectedPositions)
+        boardView.redrawChessBoard(chessBoard)
     }
 
     private fun getPossibleMovesForPiece(piece: Piece): Set<BoardPosition> {

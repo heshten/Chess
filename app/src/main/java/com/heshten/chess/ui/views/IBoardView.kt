@@ -1,11 +1,9 @@
 package com.heshten.chess.ui.views
 
-import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.pieces.Piece
+import com.heshten.chess.core.ChessBoard
 
 interface IBoardView {
 
-    fun setPieces(pieces: Set<Piece>)
-    fun setSelectedPositions(positions: Set<BoardPosition>)
+    fun redrawChessBoard(chessBoard: ChessBoard)
 
 }

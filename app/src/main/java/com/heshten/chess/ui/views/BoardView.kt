@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.heshten.chess.R
+import com.heshten.chess.core.ChessBoard
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 import com.heshten.chess.ui.views.listeners.OnPieceSelectListener
@@ -23,10 +24,7 @@ class BoardView @JvmOverloads constructor(
     }
 
     private val boardSquareRect = Rect()
-
-    private var boardPieces = setOf<Piece>()
-    private var selectedPositions = setOf<BoardPosition>()
-
+    private var chessBoard: ChessBoard? = null
     private var onPieceSelectListener: OnPieceSelectListener? = null
 
     private val darkSquarePaint = Paint().apply {
@@ -67,7 +65,7 @@ class BoardView @JvmOverloads constructor(
             onPieceSelectListener?.onPieceSelected(selectedPiece)
         } else {
             val touchedPosition = getBoardPositionForTouchEvent(event)
-            if (selectedPositions.contains(touchedPosition)) {
+            if (chessBoardSelectedAt(touchedPosition)) {
                 onPieceSelectListener?.onSelectedPositionSelected(touchedPosition)
             }
         }
@@ -80,13 +78,8 @@ class BoardView @JvmOverloads constructor(
         }
     }
 
-    override fun setPieces(pieces: Set<Piece>) {
-        boardPieces = pieces
-        invalidate()
-    }
-
-    override fun setSelectedPositions(positions: Set<BoardPosition>) {
-        selectedPositions = positions
+    override fun redrawChessBoard(chessBoard: ChessBoard) {
+        this.chessBoard = chessBoard
         invalidate()
     }
 
@@ -99,11 +92,8 @@ class BoardView @JvmOverloads constructor(
         (0 until BOARD_SIZE).forEach { columnIndex ->
             val shiftIndex = if (isLightFirst) 0 else 1
             val currentPosition = BoardPosition(rowIndex, columnIndex)
-            val pieceAtPosition = boardPieces.find { it.getCurrentPosition() == currentPosition }
-            val squarePaint = if (selectedPositions.contains(currentPosition)
-                && boardPieces.firstOrNull { it.getCurrentPosition() == currentPosition } != null) {
-                selectedSquarePaint
-            } else if (columnIndex % 2 == shiftIndex) {
+            val pieceAtPosition = pieceAtPosition(currentPosition)
+            val squarePaint = if (columnIndex % 2 == shiftIndex) {
                 lightSquarePaint
             } else {
                 darkSquarePaint
@@ -115,13 +105,20 @@ class BoardView @JvmOverloads constructor(
             boardSquareRect.top = squareSize * rowIndex
             boardSquareRect.bottom = squareSize * rowIndex + squareSize
 
-            //square will be always drawn
-            drawSquare(canvas, boardSquareRect, squarePaint)
-            //draw dot after square if any
-            if (selectedPositions.contains(currentPosition)
-                && boardPieces.firstOrNull { it.getCurrentPosition() == currentPosition } == null) {
-                drawDot(canvas, boardSquareRect)
+            if (chessBoardSelectedAt(currentPosition)) {
+                if (pieceAtPosition == null) {
+                    //regular bg paint with dot
+                    drawSquare(canvas, boardSquareRect, squarePaint)
+                    drawDot(canvas, boardSquareRect)
+                } else {
+                    //selected square bg
+                    drawSquare(canvas, boardSquareRect, selectedSquarePaint)
+                }
+            } else {
+                //regular bg paint
+                drawSquare(canvas, boardSquareRect, squarePaint)
             }
+
             //draw piece if any
             if (pieceAtPosition != null) {
                 drawPiece(pieceAtPosition, boardSquareRect, canvas)
@@ -153,7 +150,15 @@ class BoardView @JvmOverloads constructor(
 
     private fun getPieceForTouchEvent(event: MotionEvent): Piece? {
         val position = getBoardPositionForTouchEvent(event)
-        return boardPieces.firstOrNull { it.getCurrentPosition() == position }
+        return pieceAtPosition(position)
+    }
+
+    private fun chessBoardSelectedAt(boardPosition: BoardPosition): Boolean {
+        return chessBoard?.selectedPositions?.contains(boardPosition) ?: false
+    }
+
+    private fun pieceAtPosition(boardPosition: BoardPosition): Piece? {
+        return chessBoard?.getPieceForPosition(boardPosition)
     }
 
 }
