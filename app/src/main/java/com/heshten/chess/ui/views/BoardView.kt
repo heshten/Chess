@@ -61,10 +61,14 @@ class BoardView @JvmOverloads constructor(
         }
 
         val selectedPiece = getPieceForTouchEvent(event)
+        val touchedPosition = getBoardPositionForTouchEvent(event)
         if (selectedPiece != null) {
-            onPieceSelectListener?.onPieceSelected(selectedPiece)
+            if (chessBoardSelectedAt(selectedPiece.getCurrentPosition())) {
+                onPieceSelectListener?.onSelectedPositionSelected(touchedPosition)
+            } else {
+                onPieceSelectListener?.onPieceSelected(selectedPiece)
+            }
         } else {
-            val touchedPosition = getBoardPositionForTouchEvent(event)
             if (chessBoardSelectedAt(touchedPosition)) {
                 onPieceSelectListener?.onSelectedPositionSelected(touchedPosition)
             }

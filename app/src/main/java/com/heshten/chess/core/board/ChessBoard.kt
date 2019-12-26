@@ -13,7 +13,7 @@ class ChessBoard(
     private var selectedPiece: Piece? = null
 
     val selectedPositions = mutableSetOf<BoardPosition>()
-    val pieces: Set<Piece> = newGameBoardCreator.createNewBoard(topSide, bottomSide)
+    val pieces: MutableSet<Piece> = newGameBoardCreator.createNewBoard(topSide, bottomSide)
 
     fun hasPieceAtPosition(boardPosition: BoardPosition): Boolean {
         return getPieceForPosition(boardPosition) != null
@@ -26,6 +26,10 @@ class ChessBoard(
     fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
         selectedPiece?.moveTo(boardPosition)
         selectedPiece = null
+    }
+
+    fun removePieceAtPosition(boardPosition: BoardPosition) {
+        pieces.remove(getPieceForPosition(boardPosition))
     }
 
     fun selectPiece(piece: Piece) {

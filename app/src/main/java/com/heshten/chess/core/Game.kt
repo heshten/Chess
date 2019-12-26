@@ -31,13 +31,16 @@ class Game(
     fun selectedPositionClicked(boardPosition: BoardPosition) {
         if (chessBoard.hasPieceAtPosition(boardPosition)) {
             //take piece
+            chessBoard.removePieceAtPosition(boardPosition)
+            chessBoard.moveSelectedPieceToPosition(boardPosition)
+            chessBoard.clearSelectedPositions()
         } else {
             //perform move
             chessBoard.moveSelectedPieceToPosition(boardPosition)
             chessBoard.clearSelectedPositions()
-            redrawBoard()
         }
         sideMoveValidator.changeSide()
+        redrawBoard()
     }
 
     private fun redrawBoard() {

@@ -11,7 +11,7 @@ class NewGameBoardCreator(
     private val blackPiecesResourceProvider: PieceResourceProvider
 ) {
 
-    fun createNewBoard(topSide: PieceSide, bottomSide: PieceSide): Set<Piece> {
+    fun createNewBoard(topSide: PieceSide, bottomSide: PieceSide): MutableSet<Piece> {
         val pieces = mutableSetOf<Piece>()
         val topPieces = createTopPieces(topSide, getResourceProviderForSide(topSide))
         val bottomPieces = createBottomPieces(bottomSide, getResourceProviderForSide(bottomSide))
