@@ -1,15 +1,13 @@
 package com.heshten.chess.core.logic.movecheckers
 
-import com.heshten.chess.core.logic.Board
+import com.heshten.chess.core.ChessBoard
+import com.heshten.chess.core.logic.MoveChecker
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 
-class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
+class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
     override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-        if (!piece.canMoveDiagonally()) {
-            return emptySet()
-        }
         return getPossibleDiagonallyMoves(piece)
     }
 
@@ -36,12 +34,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             }
             val nextValidLeftUpPosition =
                 BoardPosition(startRowIndex - shift, startColumnIndex - shift)
-            if (!board.hasPieceAtPosition(nextValidLeftUpPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextValidLeftUpPosition)) {
                 possibleMoves.add(nextValidLeftUpPosition)
             } else {
-                if (isDifferent(piece, nextValidLeftUpPosition) && piece.canTakeDiagonally()) {
-                    possibleMoves.add(nextValidLeftUpPosition)
-                }
                 return possibleMoves
             }
         }
@@ -58,12 +53,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             }
             val nextValidRightUpPosition =
                 BoardPosition(startRowIndex - shift, startColumnIndex + shift)
-            if (!board.hasPieceAtPosition(nextValidRightUpPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextValidRightUpPosition)) {
                 possibleMoves.add(nextValidRightUpPosition)
             } else {
-                if (isDifferent(piece, nextValidRightUpPosition) && piece.canTakeDiagonally()) {
-                    possibleMoves.add(nextValidRightUpPosition)
-                }
                 return possibleMoves
             }
         }
@@ -80,12 +72,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             }
             val nextValidLeftDownPosition =
                 BoardPosition(startRowIndex + shift, startColumnIndex - shift)
-            if (!board.hasPieceAtPosition(nextValidLeftDownPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextValidLeftDownPosition)) {
                 possibleMoves.add(nextValidLeftDownPosition)
             } else {
-                if (isDifferent(piece, nextValidLeftDownPosition) && piece.canTakeDiagonally()) {
-                    possibleMoves.add(nextValidLeftDownPosition)
-                }
                 return possibleMoves
             }
         }
@@ -102,12 +91,9 @@ class DiagonalMovesChecker(board: Board) : MoveChecker(board) {
             }
             val nextValidRightDownPosition =
                 BoardPosition(startRowIndex + shift, startColumnIndex + shift)
-            if (!board.hasPieceAtPosition(nextValidRightDownPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextValidRightDownPosition)) {
                 possibleMoves.add(nextValidRightDownPosition)
             } else {
-                if (isDifferent(piece, nextValidRightDownPosition) && piece.canTakeDiagonally()) {
-                    possibleMoves.add(nextValidRightDownPosition)
-                }
                 return possibleMoves
             }
         }

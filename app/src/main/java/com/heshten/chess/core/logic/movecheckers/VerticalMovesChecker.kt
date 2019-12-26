@@ -1,16 +1,14 @@
 package com.heshten.chess.core.logic.movecheckers
 
-import com.heshten.chess.core.logic.Board
+import com.heshten.chess.core.ChessBoard
+import com.heshten.chess.core.logic.MoveChecker
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.helpers.MoveDirection
 import com.heshten.chess.core.models.pieces.Piece
 
-class VerticalMovesChecker(board: Board) : MoveChecker(board) {
+class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
     override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-        if (!piece.canMoveVertically()) {
-            return emptySet()
-        }
         return when (piece.pieceDirection()) {
             MoveDirection.UP -> getPossibleVerticalUpMoves(piece)
             MoveDirection.DOWN -> getPossibleVerticalDownMoves(piece)
@@ -34,12 +32,9 @@ class VerticalMovesChecker(board: Board) : MoveChecker(board) {
                 return possibleMoves
             }
             val nextVerticalPosition = BoardPosition(rowIndex, columnIndex)
-            if (!board.hasPieceAtPosition(nextVerticalPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextVerticalPosition)) {
                 possibleMoves.add(nextVerticalPosition)
             } else {
-                if (isDifferent(piece, nextVerticalPosition) && piece.canTakeVertically()) {
-                    possibleMoves.add(nextVerticalPosition)
-                }
                 return possibleMoves
             }
         }
@@ -55,12 +50,9 @@ class VerticalMovesChecker(board: Board) : MoveChecker(board) {
                 return possibleMoves
             }
             val nextVerticalPosition = BoardPosition(rowIndex, columnIndex)
-            if (!board.hasPieceAtPosition(nextVerticalPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextVerticalPosition)) {
                 possibleMoves.add(nextVerticalPosition)
             } else {
-                if (isDifferent(piece, nextVerticalPosition) && piece.canTakeVertically()) {
-                    possibleMoves.add(nextVerticalPosition)
-                }
                 return possibleMoves
             }
         }

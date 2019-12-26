@@ -1,15 +1,13 @@
 package com.heshten.chess.core.logic.movecheckers
 
-import com.heshten.chess.core.logic.Board
+import com.heshten.chess.core.ChessBoard
+import com.heshten.chess.core.logic.MoveChecker
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 
-class HorizontalMovesChecker(board: Board) : MoveChecker(board) {
+class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
     override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-        if (!piece.canMoveHorizontally()) {
-            return emptySet()
-        }
         return getPossibleHorizontalMoves(piece)
     }
 
@@ -31,12 +29,9 @@ class HorizontalMovesChecker(board: Board) : MoveChecker(board) {
                 return possibleMoves
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
-            if (!board.hasPieceAtPosition(nextBoardPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextBoardPosition)) {
                 possibleMoves.add(nextBoardPosition)
             } else {
-                if (isDifferent(piece, nextBoardPosition) && piece.canTakeHorizontally()) {
-                    possibleMoves.add(nextBoardPosition)
-                }
                 return possibleMoves
             }
         }
@@ -52,12 +47,9 @@ class HorizontalMovesChecker(board: Board) : MoveChecker(board) {
                 return possibleMoves
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
-            if (!board.hasPieceAtPosition(nextBoardPosition)) {
+            if (!chessBoard.hasPieceAtPosition(nextBoardPosition)) {
                 possibleMoves.add(nextBoardPosition)
             } else {
-                if (isDifferent(piece, nextBoardPosition) && piece.canTakeHorizontally()) {
-                    possibleMoves.add(nextBoardPosition)
-                }
                 return possibleMoves
             }
         }
