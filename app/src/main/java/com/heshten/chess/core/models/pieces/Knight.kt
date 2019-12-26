@@ -34,4 +34,6 @@ class Knight(
 
     override fun maxSteps(): Int = 1
 
+    override fun maxTakeSteps(): Int = 3
+
 }

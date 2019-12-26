@@ -45,7 +45,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val startRowIndex = piece.getCurrentPosition().rowIndex - 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step >= piece.maxSteps()) {
+            if (step >= piece.maxTakeSteps()) {
                 return possibleTakes
             }
             val nextValidLeftUpPosition =
@@ -68,7 +68,8 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val startRowIndex = piece.getCurrentPosition().rowIndex - 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step >= piece.maxSteps()) {
+            if (step >= piece.maxTakeSteps()
+            ) {
                 return possibleTakes
             }
             val nextValidRightUpPosition =
@@ -91,7 +92,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val startRowIndex = piece.getCurrentPosition().rowIndex + 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step >= piece.maxSteps()) {
+            if (step >= piece.maxTakeSteps()) {
                 return possibleTakes
             }
             val nextValidLeftDownPosition =
@@ -114,7 +115,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val startRowIndex = piece.getCurrentPosition().rowIndex + 1
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
         (0 until 8).forEachIndexed { step, shift ->
-            if (step >= piece.maxSteps()) {
+            if (step >= piece.maxTakeSteps()) {
                 return possibleMoves
             }
             val nextValidRightDownPosition =

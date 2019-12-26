@@ -25,7 +25,7 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val rowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
         (startColumnIndex until 8).forEachIndexed { step, columnIndex ->
-            if (step >= piece.maxSteps()) {
+            if (step >= piece.maxTakeSteps()) {
                 return possibleTakes
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
@@ -47,7 +47,7 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val rowIndex = piece.getCurrentPosition().rowIndex
         val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
         (startColumnIndex downTo 0).forEachIndexed { step, columnIndex ->
-            if (step >= piece.maxSteps()) {
+            if (step >= piece.maxTakeSteps()) {
                 return possibleTakes
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)

@@ -34,4 +34,6 @@ class Queen(
 
     override fun maxSteps(): Int = 8
 
+    override fun maxTakeSteps(): Int = 8
+
 }

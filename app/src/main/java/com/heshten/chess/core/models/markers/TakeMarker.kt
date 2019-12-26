@@ -6,4 +6,5 @@ interface TakeMarker {
     fun canTakeDiagonally(): Boolean
     fun canTakeKnightLike(): Boolean
     fun canTakeBehind(): Boolean
+    fun maxTakeSteps(): Int
 }

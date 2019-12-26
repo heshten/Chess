@@ -39,6 +39,8 @@ class Pawn(
         false -> 2
     }
 
+    override fun maxTakeSteps(): Int = 1
+
     override fun moveTo(position: BoardPosition) {
         super.moveTo(position)
         firstStepPerformed = true
