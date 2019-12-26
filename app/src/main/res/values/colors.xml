@@ -7,6 +7,6 @@
     <color name="darkBoardSquareColor">#093132</color>
     <color name="lightBoardSquareColor">#AAB3B5</color>
 
-    <color name="pieceSelectedStarColor">#FF5722</color>
+    <color name="selectedColor">#FF5722</color>
 
 </resources>

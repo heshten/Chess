@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.heshten.chess.R
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
@@ -42,8 +41,17 @@ class BoardView @JvmOverloads constructor(
         isAntiAlias = true
     }
 
-    private val selectedSquareDrawable =
-        ContextCompat.getDrawable(context, R.drawable.piece_selected_bg)
+    private val selectedSquarePaint = Paint().apply {
+        color = ContextCompat.getColor(context, R.color.selectedColor)
+        style = Paint.Style.FILL
+        isAntiAlias = true
+    }
+
+    private val dotPaint = Paint().apply {
+        color = ContextCompat.getColor(context, R.color.selectedColor)
+        style = Paint.Style.FILL
+        isAntiAlias = true
+    }
 
     init {
         setOnTouchListener(this)
@@ -92,25 +100,27 @@ class BoardView @JvmOverloads constructor(
             val shiftIndex = if (isLightFirst) 0 else 1
             val currentPosition = BoardPosition(rowIndex, columnIndex)
             val pieceAtPosition = boardPieces.find { it.getCurrentPosition() == currentPosition }
-            val paint = if (columnIndex % 2 == shiftIndex) {
+            val squarePaint = if (selectedPositions.contains(currentPosition)
+                && boardPieces.firstOrNull { it.getCurrentPosition() == currentPosition } != null) {
+                selectedSquarePaint
+            } else if (columnIndex % 2 == shiftIndex) {
                 lightSquarePaint
             } else {
                 darkSquarePaint
             }
 
-            //calc
             val squareSize = width / BOARD_SIZE
-
             boardSquareRect.left = squareSize * columnIndex
             boardSquareRect.right = squareSize * columnIndex + squareSize
             boardSquareRect.top = squareSize * rowIndex
             boardSquareRect.bottom = squareSize * rowIndex + squareSize
 
             //square will be always drawn
-            drawSquare(canvas, boardSquareRect, paint)
+            drawSquare(canvas, boardSquareRect, squarePaint)
             //draw dot after square if any
-            if (selectedPositions.contains(currentPosition)) {
-                drawSelectedSquare(canvas, boardSquareRect)
+            if (selectedPositions.contains(currentPosition)
+                && boardPieces.firstOrNull { it.getCurrentPosition() == currentPosition } == null) {
+                drawDot(canvas, boardSquareRect)
             }
             //draw piece if any
             if (pieceAtPosition != null) {
@@ -127,14 +137,11 @@ class BoardView @JvmOverloads constructor(
         canvas?.drawBitmap(piece.bitmap, null, square, null)
     }
 
-    private fun drawSelectedSquare(canvas: Canvas?, rect: Rect) {
-        val bitmap = selectedSquareDrawable?.toBitmap(
-            height = rect.height(),
-            width = rect.width()
-        )
-        if (bitmap != null) {
-            canvas?.drawBitmap(bitmap, null, rect, null)
-        }
+    private fun drawDot(canvas: Canvas?, rect: Rect) {
+        val cx = rect.centerX().toFloat()
+        val cy = rect.centerY().toFloat()
+        val radius = (rect.right - rect.left) / 5f
+        canvas?.drawCircle(cx, cy, radius, dotPaint)
     }
 
     private fun getBoardPositionForTouchEvent(event: MotionEvent): BoardPosition {
