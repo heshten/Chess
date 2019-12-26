@@ -9,7 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.heshten.chess.R
-import com.heshten.chess.core.ChessBoard
+import com.heshten.chess.core.board.ChessBoard
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
 import com.heshten.chess.ui.views.listeners.OnPieceSelectListener

@@ -4,9 +4,9 @@ import android.content.res.Resources
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.heshten.chess.R
-import com.heshten.chess.core.ChessBoard
 import com.heshten.chess.core.Game
-import com.heshten.chess.core.NewGameBoardCreator
+import com.heshten.chess.core.board.ChessBoard
+import com.heshten.chess.core.board.NewGameBoardCreator
 import com.heshten.chess.core.logic.facedes.MoveCheckerFacade
 import com.heshten.chess.core.logic.facedes.TakeCheckerFacade
 import com.heshten.chess.core.logic.movecheckers.DiagonalMovesChecker
@@ -22,6 +22,7 @@ import com.heshten.chess.core.models.PieceSide
 import com.heshten.chess.core.models.pieces.Piece
 import com.heshten.chess.core.recources.BlackPiecesResourceProvider
 import com.heshten.chess.core.recources.WhitePiecesResourceProvider
+import com.heshten.chess.core.validator.SideMoveValidator
 import com.heshten.chess.ui.views.listeners.OnPieceSelectListener
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
         val knightLikeTakesChecker = KnightLikeTakeChecker(board)
         val verticalTakesChecker = VerticalTakeChecker(board)
         val diagonalTakesChecker = DiagonalTakeChecker(board)
+        val sideValidator = SideMoveValidator()
         val moveCheckerFacade = MoveCheckerFacade(
             horizontalMovesChecker,
             verticalMovesChecker,
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
             verticalTakesChecker
         )
         //create new game instance
-        game = Game(board, boardView, moveCheckerFacade, takeCheckerFacade)
+        game = Game(board, boardView, moveCheckerFacade, takeCheckerFacade, sideValidator)
         game.start()
     }
 

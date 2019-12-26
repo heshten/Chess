@@ -1,16 +1,19 @@
 package com.heshten.chess.core
 
+import com.heshten.chess.core.board.ChessBoard
 import com.heshten.chess.core.logic.MoveChecker
 import com.heshten.chess.core.logic.TakeChecker
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece
+import com.heshten.chess.core.validator.SideMoveValidator
 import com.heshten.chess.ui.views.IBoardView
 
 class Game(
     private val chessBoard: ChessBoard,
     private val boardView: IBoardView,
     private val movesCheckerFacade: MoveChecker,
-    private val takesCheckerFacade: TakeChecker
+    private val takesCheckerFacade: TakeChecker,
+    private val sideMoveValidator: SideMoveValidator
 ) {
 
     fun start() {
@@ -18,9 +21,11 @@ class Game(
     }
 
     fun pieceSelected(piece: Piece) {
-        chessBoard.selectPiece(piece)
-        chessBoard.setSelectedPositions(getPossibleMovesForPiece(piece))
-        redrawBoard()
+        if (sideMoveValidator.getCurrentSide() == piece.pieceSide) {
+            chessBoard.selectPiece(piece)
+            chessBoard.setSelectedPositions(getPossibleMovesForPiece(piece))
+            redrawBoard()
+        }
     }
 
     fun selectedPositionClicked(boardPosition: BoardPosition) {
@@ -32,6 +37,7 @@ class Game(
             chessBoard.clearSelectedPositions()
             redrawBoard()
         }
+        sideMoveValidator.changeSide()
     }
 
     private fun redrawBoard() {

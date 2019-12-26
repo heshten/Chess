@@ -1,6 +1,6 @@
 package com.heshten.chess.core.logic.takecheckers
 
-import com.heshten.chess.core.ChessBoard
+import com.heshten.chess.core.board.ChessBoard
 import com.heshten.chess.core.logic.TakeChecker
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.pieces.Piece

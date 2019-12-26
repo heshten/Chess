@@ -1,4 +1,4 @@
-package com.heshten.chess.core
+package com.heshten.chess.core.board
 
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.Direction

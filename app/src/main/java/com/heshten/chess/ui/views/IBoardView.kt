@@ -1,6 +1,6 @@
 package com.heshten.chess.ui.views
 
-import com.heshten.chess.core.ChessBoard
+import com.heshten.chess.core.board.ChessBoard
 
 interface IBoardView {
 
