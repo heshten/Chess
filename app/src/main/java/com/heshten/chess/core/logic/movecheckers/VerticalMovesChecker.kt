@@ -3,6 +3,7 @@ package com.heshten.chess.core.logic.movecheckers
 import com.heshten.chess.core.ChessBoard
 import com.heshten.chess.core.logic.MoveChecker
 import com.heshten.chess.core.models.BoardPosition
+import com.heshten.chess.core.models.Direction
 import com.heshten.chess.core.models.pieces.Piece
 
 class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
@@ -15,8 +16,22 @@ class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
         val possibleMoves = mutableSetOf<BoardPosition>()
         val possibleUpMoves = getPossibleVerticalUpMoves(piece)
         val possibleDownMoves = getPossibleVerticalDownMoves(piece)
-        possibleMoves.addAll(possibleUpMoves)
-        possibleMoves.addAll(possibleDownMoves)
+        if (piece.canMoveBehind()) {
+            possibleMoves.addAll(possibleUpMoves)
+            possibleMoves.addAll(possibleDownMoves)
+        } else {
+            //detect which direction is allowed to be calculated for curtain piece
+            when (piece.direction) {
+                Direction.UP -> {
+                    //from bottom to top allowed
+                    possibleMoves.addAll(possibleUpMoves)
+                }
+                Direction.DOWN -> {
+                    //from top to bottom allowed
+                    possibleMoves.addAll(possibleDownMoves)
+                }
+            }
+        }
         return possibleMoves
     }
 

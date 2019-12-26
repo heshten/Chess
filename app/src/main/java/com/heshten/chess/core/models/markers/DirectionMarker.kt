@@ -1,9 +1,9 @@
 package com.heshten.chess.core.models.markers
 
-import com.heshten.chess.core.models.MoveDirection
+import com.heshten.chess.core.models.Direction
 
 interface DirectionMarker {
 
-    fun pieceDirection(): MoveDirection
+    fun pieceDirection(): Direction
 
 }

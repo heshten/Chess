@@ -2,15 +2,15 @@ package com.heshten.chess.core.models.pieces
 
 import android.graphics.Bitmap
 import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.MoveDirection
+import com.heshten.chess.core.models.Direction
 import com.heshten.chess.core.models.PieceSide
 
 class Pawn(
     bitmap: Bitmap,
-    position: BoardPosition,
     side: PieceSide,
-    private val moveDirection: MoveDirection
-) : Piece(bitmap, side, position) {
+    direction: Direction,
+    position: BoardPosition
+) : Piece(bitmap, side, direction, position) {
 
     private var firstStepPerformed = false
 

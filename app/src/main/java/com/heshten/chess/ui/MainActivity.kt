@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.heshten.chess.R
 import com.heshten.chess.core.ChessBoard
 import com.heshten.chess.core.Game
+import com.heshten.chess.core.NewGameBoardCreator
 import com.heshten.chess.core.logic.facedes.MoveCheckerFacade
 import com.heshten.chess.core.logic.facedes.TakeCheckerFacade
 import com.heshten.chess.core.logic.movecheckers.DiagonalMovesChecker
@@ -17,6 +18,7 @@ import com.heshten.chess.core.logic.takecheckers.HorizontalTakeChecker
 import com.heshten.chess.core.logic.takecheckers.KnightLikeTakeChecker
 import com.heshten.chess.core.logic.takecheckers.VerticalTakeChecker
 import com.heshten.chess.core.models.BoardPosition
+import com.heshten.chess.core.models.PieceSide
 import com.heshten.chess.core.models.pieces.Piece
 import com.heshten.chess.core.recources.BlackPiecesResourceProvider
 import com.heshten.chess.core.recources.WhitePiecesResourceProvider
@@ -44,16 +46,21 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
     private fun setListeners() {
         boardView.setPieceSelectListener(this)
         btnNewGame.setOnClickListener {
-            initGame(resources)
-            game.start()
+            val bottomSide = when (sideSwitch.isChecked) {
+                true -> PieceSide.WHITE
+                false -> PieceSide.BLACK
+            }
+            startNewGame(resources, bottomSide)
         }
     }
 
-    private fun initGame(resources: Resources) {
+    private fun startNewGame(resources: Resources, bottomSide: PieceSide) {
+        val topSide = if (bottomSide == PieceSide.WHITE) PieceSide.BLACK else PieceSide.WHITE
         //di
         val bResourceProvider = BlackPiecesResourceProvider(resources)
         val wResourceProvider = WhitePiecesResourceProvider(resources)
-        val board = ChessBoard(wResourceProvider, bResourceProvider)
+        val newGameBoardCreator = NewGameBoardCreator(wResourceProvider, bResourceProvider)
+        val board = ChessBoard(topSide, bottomSide, newGameBoardCreator)
         val horizontalMovesChecker = HorizontalMovesChecker(board)
         val knightLikeMovesChecker = KnightLikeMovesChecker(board)
         val verticalMovesChecker = VerticalMovesChecker(board)
@@ -74,9 +81,9 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
             knightLikeTakesChecker,
             verticalTakesChecker
         )
-
         //create new game instance
         game = Game(board, boardView, moveCheckerFacade, takeCheckerFacade)
+        game.start()
     }
 
 }

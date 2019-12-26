@@ -7,14 +7,27 @@
     android:background="#454545"
     tools:context=".ui.MainActivity">
 
+    <Switch
+        android:id="@+id/sideSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:switchPadding="16dp"
+        android:text="White side"
+        android:checked="true"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/boardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.heshten.chess.ui.views.BoardView
         android:id="@+id/boardView"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnNewGame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/sideSwitch" />
 
     <Button
         android:id="@+id/btnNewGame"

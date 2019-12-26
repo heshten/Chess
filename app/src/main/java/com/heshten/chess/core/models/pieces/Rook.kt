@@ -2,13 +2,15 @@ package com.heshten.chess.core.models.pieces
 
 import android.graphics.Bitmap
 import com.heshten.chess.core.models.BoardPosition
+import com.heshten.chess.core.models.Direction
 import com.heshten.chess.core.models.PieceSide
 
 class Rook(
     bitmap: Bitmap,
     side: PieceSide,
+    direction: Direction,
     position: BoardPosition
-) : Piece(bitmap, side, position) {
+) : Piece(bitmap, side, direction, position) {
 
     override fun canMoveVertically(): Boolean = true
 

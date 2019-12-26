@@ -3,6 +3,7 @@ package com.heshten.chess.core.logic.takecheckers
 import com.heshten.chess.core.ChessBoard
 import com.heshten.chess.core.logic.TakeChecker
 import com.heshten.chess.core.models.BoardPosition
+import com.heshten.chess.core.models.Direction
 import com.heshten.chess.core.models.pieces.Piece
 
 class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
@@ -17,10 +18,25 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         val rightUpPossibleTakes = getRightUpPossibleMoves(piece)
         val leftDownPossibleTakes = getLeftDownPossibleMoves(piece)
         val rightDownPossibleTakes = getRightDownPossibleMoves(piece)
-        possibleTakes.addAll(leftUpPossibleTakes)
-        possibleTakes.addAll(rightUpPossibleTakes)
-        possibleTakes.addAll(leftDownPossibleTakes)
-        possibleTakes.addAll(rightDownPossibleTakes)
+        if (piece.canMoveBehind()) {
+            possibleTakes.addAll(leftUpPossibleTakes)
+            possibleTakes.addAll(rightUpPossibleTakes)
+            possibleTakes.addAll(leftDownPossibleTakes)
+            possibleTakes.addAll(rightDownPossibleTakes)
+        } else {
+            //detect which direction is allowed to be calculated for curtain piece
+            when (piece.direction) {
+                Direction.UP -> {
+                    possibleTakes.addAll(leftUpPossibleTakes)
+                    possibleTakes.addAll(rightUpPossibleTakes)
+                }
+                Direction.DOWN -> {
+                    possibleTakes.addAll(leftDownPossibleTakes)
+                    possibleTakes.addAll(rightDownPossibleTakes)
+                }
+            }
+        }
+
         return possibleTakes
     }
 
