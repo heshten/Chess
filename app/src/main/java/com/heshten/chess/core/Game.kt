@@ -22,8 +22,8 @@ class Game(
 
     fun pieceSelected(piece: Piece) {
         if (sideMoveValidator.getCurrentSide() == piece.pieceSide) {
-            chessBoard.selectPiece(piece)
             chessBoard.setSelectedPositions(getPossibleMovesForPiece(piece))
+            chessBoard.selectPiece(piece)
             redrawBoard()
         }
     }
@@ -32,19 +32,11 @@ class Game(
         if (chessBoard.hasPieceAtPosition(boardPosition)) {
             //take piece
             chessBoard.removePieceAtPosition(boardPosition)
-            chessBoard.moveSelectedPieceToPosition(boardPosition)
-            chessBoard.clearSelectedPositions()
-        } else {
-            //perform move
-            chessBoard.moveSelectedPieceToPosition(boardPosition)
-            chessBoard.clearSelectedPositions()
         }
+        chessBoard.moveSelectedPieceToPosition(boardPosition)
+        chessBoard.clearSelectedPositions()
         sideMoveValidator.changeSide()
         redrawBoard()
-    }
-
-    private fun redrawBoard() {
-        boardView.redrawChessBoard(chessBoard)
     }
 
     private fun getPossibleMovesForPiece(piece: Piece): Set<BoardPosition> {
@@ -52,6 +44,10 @@ class Game(
         possibleMoves.addAll(movesCheckerFacade.getPossibleMoves(piece))
         possibleMoves.addAll(takesCheckerFacade.getPossibleTakes(piece))
         return possibleMoves
+    }
+
+    private fun redrawBoard() {
+        boardView.redrawChessBoard(chessBoard)
     }
 
 }
