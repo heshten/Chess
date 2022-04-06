@@ -17,7 +17,7 @@ abstract class Piece(
 ) : MoveMarker, TakeMarker, StepMarker {
 
     fun getCurrentPosition(): BoardPosition {
-        return boardPosition.copy()
+        return boardPosition
     }
 
     fun isOpposite(otherPiece: Piece): Boolean {
@@ -28,5 +28,4 @@ abstract class Piece(
     open fun moveTo(position: BoardPosition) {
         boardPosition = position
     }
-
 }

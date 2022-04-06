@@ -5,6 +5,5 @@ import com.heshten.chess.core.models.pieces.Piece
 
 interface MoveChecker {
 
-    fun getPossibleMoves(piece: Piece): Set<BoardPosition>
-
+  fun getPossibleMoves(piece: Piece): Set<BoardPosition>
 }

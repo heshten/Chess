@@ -5,7 +5,7 @@ import com.heshten.chess.core.models.pieces.Piece
 
 interface OnPieceSelectListener {
 
-    fun onPieceSelected(piece: Piece)
+  fun onPieceSelected(piece: Piece)
 
-    fun onSelectedPositionSelected(boardPosition: BoardPosition)
+  fun moveSelectedPieceToPosition(boardPosition: BoardPosition)
 }

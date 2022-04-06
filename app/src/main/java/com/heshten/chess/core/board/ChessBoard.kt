@@ -1,48 +1,52 @@
 package com.heshten.chess.core.board
 
 import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.PieceSide
 import com.heshten.chess.core.models.pieces.Piece
 
-class ChessBoard(
-    topSide: PieceSide,
-    bottomSide: PieceSide,
-    newGameBoardCreator: NewGameBoardCreator
-) {
+/**
+ * A board holder class that is the source of truth for the playing board.
+ */
+class ChessBoard(pieces: Set<Piece>) {
 
-    private var selectedPiece: Piece? = null
+  private val possibleMovesPositions = mutableSetOf<BoardPosition>()
+  private val pieces: MutableSet<Piece> = mutableSetOf()
+  private var selectedPiece: Piece? = null
 
-    val selectedPositions = mutableSetOf<BoardPosition>()
-    val pieces: MutableSet<Piece> = newGameBoardCreator.createNewBoard(topSide, bottomSide)
+  init {
+    this.pieces.addAll(pieces)
+  }
 
-    fun hasPieceAtPosition(boardPosition: BoardPosition): Boolean {
-        return getPieceForPosition(boardPosition) != null
-    }
+  fun isPossibleMoveTo(position: BoardPosition): Boolean {
+    return possibleMovesPositions.contains(position)
+  }
 
-    fun getPieceForPosition(boardPosition: BoardPosition): Piece? {
-        return pieces.find { it.getCurrentPosition() == boardPosition }
-    }
+  fun hasPieceAtPosition(boardPosition: BoardPosition): Boolean {
+    return getPieceForPosition(boardPosition) != null
+  }
 
-    fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
-        selectedPiece?.moveTo(boardPosition)
-        selectedPiece = null
-    }
+  fun getPieceForPosition(boardPosition: BoardPosition): Piece? {
+    return pieces.find { it.getCurrentPosition() == boardPosition }
+  }
 
-    fun removePieceAtPosition(boardPosition: BoardPosition) {
-        pieces.remove(getPieceForPosition(boardPosition))
-    }
+  fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
+    selectedPiece?.moveTo(boardPosition)
+    selectedPiece = null
+  }
 
-    fun selectPiece(piece: Piece) {
-        selectedPiece = piece
-    }
+  fun removePieceAtPosition(boardPosition: BoardPosition) {
+    pieces.remove(getPieceForPosition(boardPosition))
+  }
 
-    fun setSelectedPositions(positions: Set<BoardPosition>) {
-        clearSelectedPositions()
-        selectedPositions.addAll(positions)
-    }
+  fun selectPiece(piece: Piece) {
+    selectedPiece = piece
+  }
 
-    fun clearSelectedPositions() {
-        selectedPositions.clear()
-    }
+  fun setPossibleMoves(positions: Set<BoardPosition>) {
+    clearPossibleMovesPositions()
+    possibleMovesPositions.addAll(positions)
+  }
 
+  fun clearPossibleMovesPositions() {
+    possibleMovesPositions.clear()
+  }
 }
