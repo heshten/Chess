@@ -1,18 +1,16 @@
 package com.heshten.chess.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.heshten.chess.R
 import com.heshten.chess.core.models.BoardPosition
 import com.heshten.chess.core.models.PieceSide
-import com.heshten.chess.core.models.pieces.Piece
-import com.heshten.chess.ui.views.listeners.OnPieceSelectListener
+import com.heshten.chess.ui.views.BoardView
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), OnPieceSelectListener {
+class MainActivity : AppCompatActivity(), BoardView.OnPositionTouchListener {
 
   private lateinit var viewModel: MainViewModel
 
@@ -21,26 +19,17 @@ class MainActivity : AppCompatActivity(), OnPieceSelectListener {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     setListeners()
-    viewModel.chessBoard.observe(this, Observer { chessBoard ->
-      boardView.setChessBoard(chessBoard)
-    })
-    viewModel.updateBoardEvent.observe(this, Observer {
-      boardView.redrawBoard()
+    viewModel.chessUnits.observe(this, Observer { chessUnits ->
+      boardView.submitUnits(chessUnits)
     })
   }
 
-  override fun onPieceSelected(piece: Piece) {
-    Log.d("some_tag", "onPieceSelected")
-    viewModel.onPieceSelected(piece)
-  }
-
-  override fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
-    Log.d("some_tag", "moveSelectedPieceToPosition: $boardPosition")
-    viewModel.moveSelectedPieceToPosition(boardPosition)
+  override fun onPositionTouched(boardPosition: BoardPosition) {
+    viewModel.onPositionTouched(boardPosition)
   }
 
   private fun setListeners() {
-    boardView.setPieceSelectListener(this)
+    boardView.setOnPositionTouchListener(this)
     btnNewGame.setOnClickListener {
       val bottomSide = when (sideSwitch.isChecked) {
         true -> PieceSide.WHITE

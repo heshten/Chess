@@ -1,6 +1,7 @@
 package com.heshten.chess.ui.views
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
@@ -9,10 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.heshten.chess.R
-import com.heshten.chess.core.board.ChessBoard
 import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.pieces.Piece
-import com.heshten.chess.ui.views.listeners.OnPieceSelectListener
 
 class BoardView @JvmOverloads constructor(
   context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -23,8 +21,8 @@ class BoardView @JvmOverloads constructor(
   }
 
   private val boardSquareRect = Rect()
-  private var chessBoard: ChessBoard? = null
-  private var onPieceSelectListener: OnPieceSelectListener? = null
+  private var boardUnits = mapOf<BoardPosition, BoardUnit>()
+  private var onPositionTouchListener: OnPositionTouchListener? = null
 
   private val darkSquarePaint = Paint().apply {
     color = ContextCompat.getColor(context, R.color.darkBoardSquareColor)
@@ -38,7 +36,7 @@ class BoardView @JvmOverloads constructor(
     isAntiAlias = true
   }
 
-  private val selectedSquarePaint = Paint().apply {
+  private val highlightedSquarePaint = Paint().apply {
     color = ContextCompat.getColor(context, R.color.selectedColor)
     style = Paint.Style.FILL
     isAntiAlias = true
@@ -58,20 +56,8 @@ class BoardView @JvmOverloads constructor(
     if (event == null || event.actionMasked != MotionEvent.ACTION_UP) {
       return true
     }
-
-    val touchedPiece = getPieceForTouchEvent(event)
     val touchedPosition = getBoardPositionForTouchEvent(event)
-    if (touchedPiece != null) {
-      if (isPossibleMoveTo(touchedPosition)) {
-        onPieceSelectListener?.moveSelectedPieceToPosition(touchedPosition)
-      } else {
-        onPieceSelectListener?.onPieceSelected(touchedPiece)
-      }
-    } else {
-      if (isPossibleMoveTo(touchedPosition)) {
-        onPieceSelectListener?.moveSelectedPieceToPosition(touchedPosition)
-      }
-    }
+    onPositionTouchListener?.onPositionTouched(touchedPosition)
     return true
   }
 
@@ -82,17 +68,13 @@ class BoardView @JvmOverloads constructor(
     }
   }
 
-  fun redrawBoard() {
+  fun submitUnits(units: Map<BoardPosition, BoardUnit>) {
+    boardUnits = units
     invalidate()
   }
 
-  fun setChessBoard(chessBoard: ChessBoard) {
-    this.chessBoard = chessBoard
-    redrawBoard()
-  }
-
-  fun setPieceSelectListener(listener: OnPieceSelectListener) {
-    onPieceSelectListener = listener
+  fun setOnPositionTouchListener(listener: OnPositionTouchListener) {
+    onPositionTouchListener = listener
   }
 
   private fun drawRow(canvas: Canvas, rowIndex: Int) {
@@ -100,7 +82,7 @@ class BoardView @JvmOverloads constructor(
     (0 until BOARD_SIZE).forEach { columnIndex ->
       val shiftIndex = if (isLightFirst) 0 else 1
       val iterationPosition = BoardPosition(rowIndex, columnIndex)
-      val pieceAtIterationPosition = pieceAtPosition(iterationPosition)
+      val unitAtIterationPosition = boardUnits.getOr(iterationPosition, BoardUnit.Empty)
       val squarePaint = if (columnIndex % 2 == shiftIndex) {
         lightSquarePaint
       } else {
@@ -113,23 +95,22 @@ class BoardView @JvmOverloads constructor(
       boardSquareRect.top = squareSize * rowIndex
       boardSquareRect.bottom = squareSize * rowIndex + squareSize
 
-      if (isPossibleMoveTo(iterationPosition)) {
-        if (pieceAtIterationPosition == null) {
-          //regular bg paint with dot
+      when (unitAtIterationPosition) {
+        BoardUnit.Empty -> {
+          drawSquare(canvas, boardSquareRect, squarePaint)
+        }
+        BoardUnit.Dot -> {
           drawSquare(canvas, boardSquareRect, squarePaint)
           drawDot(canvas, boardSquareRect)
-        } else {
-          //selected square bg
-          drawSquare(canvas, boardSquareRect, selectedSquarePaint)
         }
-      } else {
-        //regular bg paint
-        drawSquare(canvas, boardSquareRect, squarePaint)
-      }
-
-      //draw piece if any
-      if (pieceAtIterationPosition != null) {
-        drawPiece(canvas, pieceAtIterationPosition, boardSquareRect)
+        is BoardUnit.Piece -> {
+          if (unitAtIterationPosition.isHighlighted) {
+            drawSquare(canvas, boardSquareRect, highlightedSquarePaint)
+          } else {
+            drawSquare(canvas, boardSquareRect, squarePaint)
+          }
+          drawPiece(canvas, unitAtIterationPosition.pieceBitmap, boardSquareRect)
+        }
       }
     }
   }
@@ -138,8 +119,8 @@ class BoardView @JvmOverloads constructor(
     canvas.drawRect(square, squarePaint)
   }
 
-  private fun drawPiece(canvas: Canvas, piece: Piece, square: Rect) {
-    canvas.drawBitmap(piece.bitmap, null, square, null)
+  private fun drawPiece(canvas: Canvas, bitmap: Bitmap, square: Rect) {
+    canvas.drawBitmap(bitmap, null, square, null)
   }
 
   private fun drawDot(canvas: Canvas, rect: Rect) {
@@ -156,16 +137,28 @@ class BoardView @JvmOverloads constructor(
     return BoardPosition(rowIndex.toInt(), columnIndex.toInt())
   }
 
-  private fun getPieceForTouchEvent(event: MotionEvent): Piece? {
-    val position = getBoardPositionForTouchEvent(event)
-    return pieceAtPosition(position)
+  private fun Map<BoardPosition, BoardUnit>.getOr(
+    key: BoardPosition,
+    default: BoardUnit
+  ): BoardUnit {
+    return if (this.containsKey(key)) {
+      this.getValue(key)
+    } else {
+      default
+    }
   }
 
-  private fun isPossibleMoveTo(boardPosition: BoardPosition): Boolean {
-    return chessBoard?.isPossibleMoveTo(boardPosition) ?: false
+  sealed class BoardUnit {
+    object Empty : BoardUnit()
+    object Dot : BoardUnit()
+    data class Piece(
+      val isHighlighted: Boolean,
+      val pieceBitmap: Bitmap
+    ) : BoardUnit()
   }
 
-  private fun pieceAtPosition(boardPosition: BoardPosition): Piece? {
-    return chessBoard?.getPieceForPosition(boardPosition)
+  interface OnPositionTouchListener {
+
+    fun onPositionTouched(boardPosition: BoardPosition)
   }
 }

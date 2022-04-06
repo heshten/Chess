@@ -16,15 +16,23 @@ class ChessBoard(pieces: Set<Piece>) {
     this.pieces.addAll(pieces)
   }
 
+  fun getAllPieces(): Set<Piece> {
+    return pieces
+  }
+
+  fun getPossibleMovesPositions(): Set<BoardPosition> {
+    return possibleMovesPositions
+  }
+
   fun isPossibleMoveTo(position: BoardPosition): Boolean {
     return possibleMovesPositions.contains(position)
   }
 
   fun hasPieceAtPosition(boardPosition: BoardPosition): Boolean {
-    return getPieceForPosition(boardPosition) != null
+    return getPieceAtPosition(boardPosition) != null
   }
 
-  fun getPieceForPosition(boardPosition: BoardPosition): Piece? {
+  fun getPieceAtPosition(boardPosition: BoardPosition): Piece? {
     return pieces.find { it.getCurrentPosition() == boardPosition }
   }
 
@@ -34,7 +42,7 @@ class ChessBoard(pieces: Set<Piece>) {
   }
 
   fun removePieceAtPosition(boardPosition: BoardPosition) {
-    pieces.remove(getPieceForPosition(boardPosition))
+    pieces.remove(getPieceAtPosition(boardPosition))
   }
 
   fun selectPiece(piece: Piece) {
