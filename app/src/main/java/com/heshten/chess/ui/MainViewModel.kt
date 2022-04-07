@@ -12,17 +12,17 @@ import com.heshten.chess.ui.views.BoardView
 
 class MainViewModel : ViewModel() {
 
-  private lateinit var game: Game
+  private var game: Game? = null
 
-  private val _chessUnits = MutableLiveData<Map<BoardPosition, BoardView.BoardUnit>>()
-  val chessUnits: LiveData<Map<BoardPosition, BoardView.BoardUnit>> = _chessUnits
+  private val _boardUnits = MutableLiveData<Map<BoardPosition, BoardView.BoardUnit>>()
+  val boardUnits: LiveData<Map<BoardPosition, BoardView.BoardUnit>> = _boardUnits
 
   fun startNewGame(resources: Resources, bottomSide: PieceSide) {
     game = Game.createNewGame(resources, bottomSide, ::updateBoard)
   }
 
   fun onPositionTouched(boardPosition: BoardPosition) {
-    game.onPositionTouched(boardPosition)
+    game?.onPositionTouched(boardPosition)
   }
 
   private fun updateBoard(chessBoard: ChessBoard) {
@@ -39,6 +39,6 @@ class MainViewModel : ViewModel() {
         mutableUnitsMap[boardPosition] = BoardView.BoardUnit.Dot
       }
     }
-    _chessUnits.value = mutableUnitsMap
+    _boardUnits.value = mutableUnitsMap
   }
 }

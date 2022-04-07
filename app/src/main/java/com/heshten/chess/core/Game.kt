@@ -1,6 +1,7 @@
 package com.heshten.chess.core
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import com.heshten.chess.core.board.ChessBoard
 import com.heshten.chess.core.board.NewGameBoardCreator
 import com.heshten.chess.core.logic.MoveChecker
@@ -79,7 +80,7 @@ class Game(
   }
 
   fun onPositionTouched(boardPosition: BoardPosition) {
-    val pieceAtPosition = chessBoard.getPieceForPosition(boardPosition)
+    val pieceAtPosition = chessBoard.getPieceAtPosition(boardPosition)
     if (pieceAtPosition == null) {
       if (chessBoard.isPossibleMoveTo(boardPosition)) {
         moveSelectedPieceToPosition(boardPosition)

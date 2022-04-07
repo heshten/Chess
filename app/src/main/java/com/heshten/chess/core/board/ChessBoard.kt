@@ -32,10 +32,6 @@ class ChessBoard(pieces: Set<Piece>) {
     return getPieceAtPosition(boardPosition) != null
   }
 
-  fun getPieceAtPosition(boardPosition: BoardPosition): Piece? {
-    return pieces.find { it.getCurrentPosition() == boardPosition }
-  }
-
   fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
     selectedPiece?.moveTo(boardPosition)
     selectedPiece = null
@@ -56,5 +52,9 @@ class ChessBoard(pieces: Set<Piece>) {
 
   fun clearPossibleMovesPositions() {
     possibleMovesPositions.clear()
+  }
+
+  fun getPieceAtPosition(boardPosition: BoardPosition): Piece? {
+    return pieces.find { it.getCurrentPosition() == boardPosition }
   }
 }

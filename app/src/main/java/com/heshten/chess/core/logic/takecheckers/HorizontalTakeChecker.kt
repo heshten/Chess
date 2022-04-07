@@ -29,7 +29,7 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
                 return possibleTakes
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
-            val nextPiece = chessBoard.getPieceForPosition(nextBoardPosition)
+            val nextPiece = chessBoard.getPieceAtPosition(nextBoardPosition)
             if (nextPiece == null) {
                 //move on
             } else {
@@ -51,7 +51,7 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
                 return possibleTakes
             }
             val nextBoardPosition = BoardPosition(rowIndex, columnIndex)
-            val nextPiece = chessBoard.getPieceForPosition(nextBoardPosition)
+            val nextPiece = chessBoard.getPieceAtPosition(nextBoardPosition)
             if (nextPiece == null) {
                 //move on
             } else {

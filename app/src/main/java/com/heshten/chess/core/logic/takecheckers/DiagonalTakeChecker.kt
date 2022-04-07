@@ -50,7 +50,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
             }
             val nextValidLeftUpPosition =
                 BoardPosition(startRowIndex - shift, startColumnIndex - shift)
-            val nextPiece = chessBoard.getPieceForPosition(nextValidLeftUpPosition)
+            val nextPiece = chessBoard.getPieceAtPosition(nextValidLeftUpPosition)
             if (nextPiece == null) {
                 //move on
             } else {
@@ -74,7 +74,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
             }
             val nextValidRightUpPosition =
                 BoardPosition(startRowIndex - shift, startColumnIndex + shift)
-            val nextPiece = chessBoard.getPieceForPosition(nextValidRightUpPosition)
+            val nextPiece = chessBoard.getPieceAtPosition(nextValidRightUpPosition)
             if (nextPiece == null) {
                 //move on
             } else {
@@ -97,7 +97,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
             }
             val nextValidLeftDownPosition =
                 BoardPosition(startRowIndex + shift, startColumnIndex - shift)
-            val nextPiece = chessBoard.getPieceForPosition(nextValidLeftDownPosition)
+            val nextPiece = chessBoard.getPieceAtPosition(nextValidLeftDownPosition)
             if (nextPiece == null) {
                 //move on
             } else {
@@ -120,7 +120,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
             }
             val nextValidRightDownPosition =
                 BoardPosition(startRowIndex + shift, startColumnIndex + shift)
-            val nextPiece = chessBoard.getPieceForPosition(nextValidRightDownPosition)
+            val nextPiece = chessBoard.getPieceAtPosition(nextValidRightDownPosition)
             if (nextPiece == null) {
                 //move on
             } else {

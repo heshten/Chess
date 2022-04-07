@@ -11,6 +11,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.heshten.chess.R
 import com.heshten.chess.core.models.BoardPosition
+import kotlin.math.min
 
 class BoardView @JvmOverloads constructor(
   context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -66,6 +67,16 @@ class BoardView @JvmOverloads constructor(
     (0 until BOARD_SIZE).forEach { rowIndex ->
       drawRow(canvas, rowIndex)
     }
+  }
+
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+    val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+    val expectedSize = min(widthSize, heightSize)
+    super.onMeasure(
+      MeasureSpec.makeMeasureSpec(expectedSize, MeasureSpec.EXACTLY),
+      MeasureSpec.makeMeasureSpec(expectedSize, MeasureSpec.EXACTLY)
+    )
   }
 
   fun submitUnits(units: Map<BoardPosition, BoardUnit>) {
