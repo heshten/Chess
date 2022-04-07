@@ -5,6 +5,5 @@ import com.heshten.chess.core.models.pieces.Piece
 
 interface TakeChecker {
 
-    fun getPossibleTakes(piece: Piece): Set<BoardPosition>
-
+  fun getPossibleTakes(piece: Piece): Set<BoardPosition>
 }

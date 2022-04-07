@@ -1,7 +1,6 @@
 package com.heshten.chess.core
 
 import android.content.res.Resources
-import android.graphics.Bitmap
 import com.heshten.chess.core.board.ChessBoard
 import com.heshten.chess.core.board.NewGameBoardCreator
 import com.heshten.chess.core.logic.MoveChecker

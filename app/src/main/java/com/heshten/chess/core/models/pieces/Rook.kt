@@ -6,34 +6,34 @@ import com.heshten.chess.core.models.Direction
 import com.heshten.chess.core.models.PieceSide
 
 class Rook(
-    bitmap: Bitmap,
-    side: PieceSide,
-    direction: Direction,
-    position: BoardPosition
+  bitmap: Bitmap,
+  side: PieceSide,
+  direction: Direction,
+  position: BoardPosition
 ) : Piece(bitmap, side, direction, position) {
 
-    override fun canMoveVertically(): Boolean = true
+  override fun canMoveVertically(): Boolean = true
 
-    override fun canMoveHorizontally(): Boolean = true
+  override fun canMoveHorizontally(): Boolean = true
 
-    override fun canMoveDiagonally(): Boolean = false
+  override fun canMoveDiagonally(): Boolean = false
 
-    override fun canMoveKnightLike(): Boolean = false
+  override fun canMoveKnightLike(): Boolean = false
 
-    override fun canMoveBehind(): Boolean = true
+  override fun canMoveBehind(): Boolean = true
 
-    override fun canTakeVertically(): Boolean = true
+  override fun canTakeVertically(): Boolean = true
 
-    override fun canTakeHorizontally(): Boolean = true
+  override fun canTakeHorizontally(): Boolean = true
 
-    override fun canTakeDiagonally(): Boolean = false
+  override fun canTakeDiagonally(): Boolean = false
 
-    override fun canTakeKnightLike(): Boolean = false
+  override fun canTakeKnightLike(): Boolean = false
 
-    override fun canTakeBehind(): Boolean = true
+  override fun canTakeBehind(): Boolean = true
 
-    override fun maxSteps(): Int = 8
+  override fun maxSteps(): Int = 8
 
-    override fun maxTakeSteps(): Int = 8
+  override fun maxTakeSteps(): Int = 8
 
 }
