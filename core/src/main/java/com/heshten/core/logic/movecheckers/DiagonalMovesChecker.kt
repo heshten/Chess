@@ -34,7 +34,9 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidLeftUpPosition =
         BoardPosition(startRowIndex - shift, startColumnIndex - shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidLeftUpPosition)) {
+      if (!chessBoard.hasPieceAtPosition(nextValidLeftUpPosition)
+        && positionIsOnBoard(nextValidLeftUpPosition)
+      ) {
         possibleMoves.add(nextValidLeftUpPosition)
       } else {
         return possibleMoves
@@ -53,7 +55,9 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidRightUpPosition =
         BoardPosition(startRowIndex - shift, startColumnIndex + shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidRightUpPosition)) {
+      if (!chessBoard.hasPieceAtPosition(nextValidRightUpPosition)
+        && positionIsOnBoard(nextValidRightUpPosition)
+      ) {
         possibleMoves.add(nextValidRightUpPosition)
       } else {
         return possibleMoves
@@ -72,7 +76,9 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidLeftDownPosition =
         BoardPosition(startRowIndex + shift, startColumnIndex - shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidLeftDownPosition)) {
+      if (!chessBoard.hasPieceAtPosition(nextValidLeftDownPosition)
+        && positionIsOnBoard(nextValidLeftDownPosition)
+      ) {
         possibleMoves.add(nextValidLeftDownPosition)
       } else {
         return possibleMoves
@@ -91,12 +97,18 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidRightDownPosition =
         BoardPosition(startRowIndex + shift, startColumnIndex + shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidRightDownPosition)) {
+      if (!chessBoard.hasPieceAtPosition(nextValidRightDownPosition)
+        && positionIsOnBoard(nextValidRightDownPosition)
+      ) {
         possibleMoves.add(nextValidRightDownPosition)
       } else {
         return possibleMoves
       }
     }
     return possibleMoves
+  }
+
+  private fun positionIsOnBoard(position: BoardPosition): Boolean {
+    return position.columnIndex in 0..7 && position.rowIndex in 0..7
   }
 }

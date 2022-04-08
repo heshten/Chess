@@ -38,9 +38,12 @@ class KnightLikeMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     possiblePosition: BoardPosition,
     possibleMovesContainer: MutableSet<BoardPosition>
   ) {
-    if (!chessBoard.hasPieceAtPosition(possiblePosition)) {
+    if (positionIsOnBoard(possiblePosition) && !chessBoard.hasPieceAtPosition(possiblePosition)) {
       possibleMovesContainer.add(possiblePosition)
     }
   }
 
+  private fun positionIsOnBoard(position: BoardPosition): Boolean {
+    return position.columnIndex in 0..7 && position.rowIndex in 0..7
+  }
 }

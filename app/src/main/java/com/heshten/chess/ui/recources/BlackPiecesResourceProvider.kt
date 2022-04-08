@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import com.heshten.chess.R
 
 class BlackPiecesResourceProvider(
+  private val cache: MutableMap<Int, Bitmap>,
   private val resources: Resources
 ) : PieceResourceProvider {
 
@@ -22,6 +23,11 @@ class BlackPiecesResourceProvider(
   override fun getKingBitmap(): Bitmap = getBitmap(R.drawable.b_king_png_shadow)
 
   private fun getBitmap(resourceId: Int): Bitmap {
-    return BitmapFactory.decodeResource(resources, resourceId)
+    val cachedBitmap = cache[resourceId]
+    if (cachedBitmap == null) {
+      cache[resourceId] =
+        BitmapFactory.decodeResource(resources, resourceId)
+    }
+    return cache.getValue(resourceId)
   }
 }

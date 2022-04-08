@@ -1,6 +1,7 @@
 package com.heshten.chess.ui
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -41,7 +42,7 @@ class MainActivity :
   private fun setListeners() {
     boardView.setOnPositionTouchListener(this)
     btnNewGameBlack.setOnClickListener {
-      viewModel.startNewGame(PieceSide.WHITE)
+      viewModel.startNewGame(PieceSide.BLACK)
       collapseBottomSheet()
     }
     btnNewGameWhite.setOnClickListener {
@@ -62,7 +63,7 @@ class MainActivity :
   }
 
   private fun initViewModel() {
-    val factory = MainViewModelFactory(resources)
+    val factory = MainViewModelFactory(mutableMapOf(), resources)
     viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
   }
 
@@ -91,13 +92,14 @@ class MainActivity :
   }
 
   private class MainViewModelFactory(
+    private val cache: MutableMap<Int, Bitmap>,
     private val resources: Resources
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
       return MainViewModel(
-        BlackPiecesResourceProvider(resources),
-        WhitePiecesResourceProvider(resources)
+        BlackPiecesResourceProvider(cache, resources),
+        WhitePiecesResourceProvider(cache, resources)
       ) as T
     }
   }
