@@ -1,15 +1,19 @@
 package com.heshten.chess.ui
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.math.MathUtils
 import com.heshten.chess.R
-import com.heshten.chess.core.models.BoardPosition
-import com.heshten.chess.core.models.PieceSide
+import com.heshten.chess.ui.recources.BlackPiecesResourceProvider
+import com.heshten.chess.ui.recources.WhitePiecesResourceProvider
 import com.heshten.chess.ui.views.BoardView
+import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.PieceSide
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity :
@@ -18,10 +22,13 @@ class MainActivity :
   private lateinit var viewModel: MainViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    initViewModel()
     super.onCreate(savedInstanceState)
+    initViewModel()
     setListeners()
     setupBottomSheet()
+    viewModel.currentSide.observe(this, { currentSide ->
+      tvSide.text = currentSide.name
+    })
     viewModel.boardUnits.observe(this, { boardUnits ->
       boardView.submitUnits(boardUnits)
     })
@@ -33,16 +40,12 @@ class MainActivity :
 
   private fun setListeners() {
     boardView.setOnPositionTouchListener(this)
-    btnNewGame.setOnClickListener {
-      viewModel.startNewGame(resources, PieceSide.WHITE)
+    btnNewGameBlack.setOnClickListener {
+      viewModel.startNewGame(PieceSide.WHITE)
       collapseBottomSheet()
     }
-    btnNewGame2.setOnClickListener {
-      viewModel.startNewGame(resources, PieceSide.WHITE)
-      collapseBottomSheet()
-    }
-    btnNewGame3.setOnClickListener {
-      viewModel.startNewGame(resources, PieceSide.WHITE)
+    btnNewGameWhite.setOnClickListener {
+      viewModel.startNewGame(PieceSide.WHITE)
       collapseBottomSheet()
     }
   }
@@ -59,7 +62,8 @@ class MainActivity :
   }
 
   private fun initViewModel() {
-    viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+    val factory = MainViewModelFactory(resources)
+    viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
   }
 
   private inner class MenuSheetCallback : BottomSheetBehavior.BottomSheetCallback() {
@@ -71,12 +75,30 @@ class MainActivity :
       val translation = MathUtils.lerp(0f, -(boardView.height / 4f), slideOffset)
       // does the property changes at once
       boardView.animate()
+        .setDuration(0)
         .translationY(translation)
         .scaleX(alphaScale)
         .scaleY(alphaScale)
         .alpha(alphaScale)
-        .setDuration(0)
         .start()
+      tvSide.animate()
+        .setDuration(0)
+        .scaleX(alphaScale)
+        .scaleY(alphaScale)
+        .alpha(alphaScale)
+        .start()
+    }
+  }
+
+  private class MainViewModelFactory(
+    private val resources: Resources
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+      return MainViewModel(
+        BlackPiecesResourceProvider(resources),
+        WhitePiecesResourceProvider(resources)
+      ) as T
     }
   }
 }

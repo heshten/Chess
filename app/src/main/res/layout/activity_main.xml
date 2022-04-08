@@ -7,6 +7,15 @@
     android:background="#f5f5f5"
     tools:context=".ui.MainActivity">
 
+    <TextView
+        android:id="@+id/tvSide"
+        app:layout_anchor="@id/boardView"
+        app:layout_anchorGravity="center_horizontal"
+        android:translationY="-36dp"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <com.heshten.chess.ui.views.BoardView
         android:id="@+id/boardView"
         android:layout_width="match_parent"
@@ -38,8 +47,8 @@
             android:layout_height="4dp" />
 
         <Button
-            android:id="@+id/btnNewGame"
-            android:text="Start New Game"
+            android:id="@+id/btnNewGameWhite"
+            android:text="Start New Game White"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="?attr/materialButtonStyle"
@@ -49,32 +58,21 @@
             app:layout_constraintTop_toBottomOf="@id/pimpView" />
 
         <Button
-            android:id="@+id/btnNewGame2"
-            android:text="Start New Game2"
+            android:id="@+id/btnNewGameBlack"
+            android:text="Start New Game Black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="?attr/materialButtonStyle"
             android:layout_marginTop="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnNewGame" />
-
-        <Button
-            android:id="@+id/btnNewGame3"
-            android:text="Start New Game3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?attr/materialButtonStyle"
-            android:layout_marginTop="24dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnNewGame2" />
+            app:layout_constraintTop_toBottomOf="@id/btnNewGameWhite" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnNewGame3" />
+            app:layout_constraintTop_toBottomOf="@id/btnNewGameBlack" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

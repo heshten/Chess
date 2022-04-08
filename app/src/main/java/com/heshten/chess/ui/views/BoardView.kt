@@ -10,7 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.heshten.chess.R
-import com.heshten.chess.core.models.BoardPosition
+import com.heshten.core.models.BoardPosition
 import kotlin.math.min
 
 class BoardView @JvmOverloads constructor(
