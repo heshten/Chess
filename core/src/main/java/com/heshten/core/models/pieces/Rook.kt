@@ -7,8 +7,9 @@ import com.heshten.core.models.PieceSide
 class Rook(
   side: PieceSide,
   direction: Direction,
-  position: BoardPosition
-) : Piece(side, direction, position) {
+  position: BoardPosition,
+  firstMovePerformed: Boolean
+) : Piece(side, direction, position, firstMovePerformed) {
 
   override fun canMoveVertically(): Boolean = true
 
@@ -33,5 +34,4 @@ class Rook(
   override fun maxSteps(): Int = 8
 
   override fun maxTakeSteps(): Int = 8
-
 }

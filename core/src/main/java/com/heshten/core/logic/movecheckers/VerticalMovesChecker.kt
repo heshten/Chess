@@ -39,8 +39,8 @@ class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getPossibleVerticalUpMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowPosition = piece.getCurrentPosition().rowIndex - 1
-    val columnIndex = piece.getCurrentPosition().columnIndex
+    val startRowPosition = piece.boardPosition.rowIndex - 1
+    val columnIndex = piece.boardPosition.columnIndex
     (startRowPosition downTo 0).forEachIndexed { step, rowIndex ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -57,8 +57,8 @@ class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getPossibleVerticalDownMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowPosition = piece.getCurrentPosition().rowIndex + 1
-    val columnIndex = piece.getCurrentPosition().columnIndex
+    val startRowPosition = piece.boardPosition.rowIndex + 1
+    val columnIndex = piece.boardPosition.columnIndex
     (startRowPosition until 8).forEachIndexed { step, rowIndex ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -72,5 +72,4 @@ class VerticalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     }
     return possibleMoves
   }
-
 }

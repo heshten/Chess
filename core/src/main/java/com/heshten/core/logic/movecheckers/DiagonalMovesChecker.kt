@@ -28,8 +28,8 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getLeftUpPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex - 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
+    val startRowIndex = piece.boardPosition.rowIndex - 1
+    val startColumnIndex = piece.boardPosition.columnIndex - 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -47,8 +47,8 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getRightUpPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex - 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
+    val startRowIndex = piece.boardPosition.rowIndex - 1
+    val startColumnIndex = piece.boardPosition.columnIndex + 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -66,8 +66,8 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getLeftDownPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex + 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
+    val startRowIndex = piece.boardPosition.rowIndex + 1
+    val startColumnIndex = piece.boardPosition.columnIndex - 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -85,8 +85,8 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getRightDownPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex + 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
+    val startRowIndex = piece.boardPosition.rowIndex + 1
+    val startColumnIndex = piece.boardPosition.columnIndex + 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxSteps()) {
         return possibleMoves

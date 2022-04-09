@@ -117,7 +117,7 @@ class MainViewModel(
   private fun updateBoard(chessBoard: ChessBoard) {
     val mutableUnitsMap = mutableMapOf<BoardPosition, BoardView.BoardUnit>()
     chessBoard.getAllPieces().forEach { piece ->
-      mutableUnitsMap[piece.getCurrentPosition()] =
+      mutableUnitsMap[piece.boardPosition] =
         BoardView.BoardUnit.Piece(false, getBitmapForPiece(piece))
     }
     chessBoard.getPossibleMovesPositions().forEach { boardPosition ->

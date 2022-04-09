@@ -14,8 +14,8 @@ class KnightLikeMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getKnightLikePossibleMoves(piece: Piece): Set<BoardPosition> {
     val possiblePositions = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex
-    val startColumnIndex = piece.getCurrentPosition().columnIndex
+    val startRowIndex = piece.boardPosition.rowIndex
+    val startColumnIndex = piece.boardPosition.columnIndex
     val upLeftPosition = BoardPosition(startRowIndex - 2, startColumnIndex - 1)
     val upRightPosition = BoardPosition(startRowIndex - 2, startColumnIndex + 1)
     val leftUpPosition = BoardPosition(startRowIndex - 1, startColumnIndex - 2)

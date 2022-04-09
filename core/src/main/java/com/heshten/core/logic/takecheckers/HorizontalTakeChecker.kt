@@ -24,8 +24,8 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getRightSidePossibleTakes(piece: Piece): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val rowIndex = piece.getCurrentPosition().rowIndex
-    val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
+    val rowIndex = piece.boardPosition.rowIndex
+    val startColumnIndex = piece.boardPosition.columnIndex + 1
     (startColumnIndex until 8).forEachIndexed { step, columnIndex ->
       if (step >= piece.maxTakeSteps()) {
         return possibleTakes
@@ -35,7 +35,7 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.direction != nextPiece.direction) {
           possibleTakes.add(nextBoardPosition)
         }
         return possibleTakes
@@ -46,8 +46,8 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getLeftSidePossibleTakes(piece: Piece): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val rowIndex = piece.getCurrentPosition().rowIndex
-    val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
+    val rowIndex = piece.boardPosition.rowIndex
+    val startColumnIndex = piece.boardPosition.columnIndex - 1
     (startColumnIndex downTo 0).forEachIndexed { step, columnIndex ->
       if (step >= piece.maxTakeSteps()) {
         return possibleTakes
@@ -57,7 +57,7 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.direction != nextPiece.direction) {
           possibleTakes.add(nextBoardPosition)
         }
         return possibleTakes
@@ -65,5 +65,4 @@ class HorizontalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     }
     return possibleTakes
   }
-
 }

@@ -10,35 +10,42 @@ import com.heshten.core.models.markers.TakeMarker
 abstract class Piece(
   val pieceSide: PieceSide,
   val direction: Direction,
-  private var boardPosition: BoardPosition
+  val boardPosition: BoardPosition,
+  val firstMovePerformed: Boolean
 ) : MoveMarker, TakeMarker, StepMarker {
 
-  private var firstMovePerformed = false
-
-  fun getCurrentPosition(): BoardPosition {
-    return boardPosition
-  }
-
-  fun isOpposite(otherPiece: Piece): Boolean {
-    return pieceSide != otherPiece.pieceSide
-  }
-
-  fun firstMovePerformed(): Boolean {
-    return firstMovePerformed
-  }
-
-  fun copy(): Piece = when(this) {
-    is Bishop -> Bishop(pieceSide, direction, getCurrentPosition())
-    is King -> Bishop(pieceSide, direction, getCurrentPosition())
-    is Knight -> Bishop(pieceSide, direction, getCurrentPosition())
-    is Pawn -> Bishop(pieceSide, direction, getCurrentPosition())
-    is Queen -> Bishop(pieceSide, direction, getCurrentPosition())
-    is Rook -> Bishop(pieceSide, direction, getCurrentPosition())
+  fun copy(
+    pieceSide: PieceSide = this.pieceSide,
+    direction: Direction = this.direction,
+    boardPosition: BoardPosition = this.boardPosition,
+    firstMovePerformed: Boolean = this.firstMovePerformed
+  ): Piece = when(this) {
+    is Bishop -> Bishop(pieceSide, direction, boardPosition, firstMovePerformed)
+    is King -> King(pieceSide, direction, boardPosition, firstMovePerformed)
+    is Knight -> Knight(pieceSide, direction, boardPosition, firstMovePerformed)
+    is Pawn -> Pawn(pieceSide, direction, boardPosition, firstMovePerformed)
+    is Queen -> Queen(pieceSide, direction, boardPosition, firstMovePerformed)
+    is Rook -> Rook(pieceSide, direction, boardPosition, firstMovePerformed)
     else -> throw IllegalStateException()
   }
 
-  fun moveTo(position: BoardPosition) {
-    firstMovePerformed = true
-    boardPosition = position
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Piece) return false
+
+    if (pieceSide != other.pieceSide) return false
+    if (direction != other.direction) return false
+    if (boardPosition != other.boardPosition) return false
+    if (firstMovePerformed != other.firstMovePerformed) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = pieceSide.hashCode()
+    result = 31 * result + direction.hashCode()
+    result = 31 * result + boardPosition.hashCode()
+    result = 31 * result + firstMovePerformed.hashCode()
+    return result
   }
 }

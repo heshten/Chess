@@ -33,7 +33,14 @@ class ChessBoard(pieces: Set<Piece>) {
   }
 
   fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
-    selectedPiece?.moveTo(boardPosition)
+    val selectedPieceLocal = selectedPiece ?: return
+    pieces.remove(selectedPieceLocal)
+    pieces.add(
+      selectedPieceLocal.copy(
+        boardPosition = boardPosition,
+        firstMovePerformed = true
+      )
+    )
     selectedPiece = null
   }
 
@@ -55,6 +62,6 @@ class ChessBoard(pieces: Set<Piece>) {
   }
 
   fun getPieceAtPosition(boardPosition: BoardPosition): Piece? {
-    return pieces.find { it.getCurrentPosition() == boardPosition }
+    return pieces.find { it.boardPosition == boardPosition }
   }
 }

@@ -5,6 +5,7 @@ import com.heshten.core.logic.PositionExcluder
 import com.heshten.core.logic.TakeChecker
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.Direction
+import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.Piece
 
 class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
@@ -43,8 +44,8 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getLeftUpPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex - 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
+    val startRowIndex = piece.boardPosition.rowIndex - 1
+    val startColumnIndex = piece.boardPosition.columnIndex - 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxTakeSteps()) {
         return possibleTakes
@@ -53,9 +54,9 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         BoardPosition(startRowIndex - shift, startColumnIndex - shift)
       val nextPiece = chessBoard.getPieceAtPosition(nextValidLeftUpPosition)
       if (nextPiece == null) {
-        //move on
+        // move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.pieceSide != nextPiece.pieceSide) {
           possibleTakes.add(nextValidLeftUpPosition)
         }
         return possibleTakes
@@ -66,8 +67,8 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getRightUpPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex - 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
+    val startRowIndex = piece.boardPosition.rowIndex - 1
+    val startColumnIndex = piece.boardPosition.columnIndex + 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxTakeSteps()
       ) {
@@ -79,7 +80,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.pieceSide != nextPiece.pieceSide) {
           possibleTakes.add(nextValidRightUpPosition)
         }
         return possibleTakes
@@ -90,8 +91,8 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getLeftDownPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex + 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
+    val startRowIndex = piece.boardPosition.rowIndex + 1
+    val startColumnIndex = piece.boardPosition.columnIndex - 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxTakeSteps()) {
         return possibleTakes
@@ -102,7 +103,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.pieceSide != nextPiece.pieceSide) {
           possibleTakes.add(nextValidLeftDownPosition)
         }
         return possibleTakes
@@ -113,8 +114,8 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getRightDownPossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex + 1
-    val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
+    val startRowIndex = piece.boardPosition.rowIndex + 1
+    val startColumnIndex = piece.boardPosition.columnIndex + 1
     (0 until 8).forEachIndexed { step, shift ->
       if (step >= piece.maxTakeSteps()) {
         return possibleMoves
@@ -125,7 +126,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.pieceSide != nextPiece.pieceSide) {
           possibleMoves.add(nextValidRightDownPosition)
         }
         return possibleMoves

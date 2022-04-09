@@ -20,13 +20,11 @@ class GameEngine(
         val possibleMoves = game.calculatePossibleMovesForPiece(piece)
         possibleMoves.forEach { possibleMovePosition ->
           val allPiecesMutableSet = chessBoard.getAllPieces().toMutableSet()
-          allPiecesMutableSet.remove(piece)
-          val pieceCopy = piece.copy()
-          pieceCopy.moveTo(possibleMovePosition)
-          allPiecesMutableSet.add(pieceCopy)
           val chessboardSnapshot = ChessBoard(allPiecesMutableSet)
+          chessboardSnapshot.selectPiece(piece)
+          chessboardSnapshot.moveSelectedPieceToPosition(possibleMovePosition)
           rankMap[calculateBoardRank(chessboardSnapshot, engineSide)] =
-            Move(piece.getCurrentPosition(), possibleMovePosition)
+            Move(piece.boardPosition, possibleMovePosition)
         }
       }
     }

@@ -7,8 +7,9 @@ import com.heshten.core.models.PieceSide
 class Pawn(
   side: PieceSide,
   direction: Direction,
-  position: BoardPosition
-) : Piece(side, direction, position) {
+  position: BoardPosition,
+  firstMovePerformed: Boolean
+) : Piece(side, direction, position, firstMovePerformed) {
 
   override fun canMoveVertically(): Boolean = true
 
@@ -30,7 +31,7 @@ class Pawn(
 
   override fun canTakeBehind(): Boolean = false
 
-  override fun maxSteps(): Int = when (firstMovePerformed()) {
+  override fun maxSteps(): Int = when (firstMovePerformed) {
     true -> 1
     false -> 2
   }

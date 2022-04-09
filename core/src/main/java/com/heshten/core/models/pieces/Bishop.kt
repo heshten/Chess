@@ -7,8 +7,9 @@ import com.heshten.core.models.PieceSide
 class Bishop(
   side: PieceSide,
   direction: Direction,
-  position: BoardPosition
-) : Piece(side, direction, position) {
+  position: BoardPosition,
+  firstMovePerformed: Boolean
+) : Piece(side, direction, position, firstMovePerformed) {
 
   override fun canMoveVertically(): Boolean = false
 

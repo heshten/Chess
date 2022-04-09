@@ -24,8 +24,8 @@ class VerticalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getPossibleVerticalUpTakes(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val startRowPosition = piece.getCurrentPosition().rowIndex - 1
-    val columnIndex = piece.getCurrentPosition().columnIndex
+    val startRowPosition = piece.boardPosition.rowIndex - 1
+    val columnIndex = piece.boardPosition.columnIndex
     (startRowPosition downTo 0).forEachIndexed { step, rowIndex ->
       if (step >= piece.maxTakeSteps()) {
         return possibleMoves
@@ -35,7 +35,7 @@ class VerticalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.direction != nextPiece.direction) {
           possibleMoves.add(nextVerticalPosition)
         }
         return possibleMoves
@@ -46,8 +46,8 @@ class VerticalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getPossibleVerticalDownTakes(piece: Piece): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val startRowPosition = piece.getCurrentPosition().rowIndex + 1
-    val columnIndex = piece.getCurrentPosition().columnIndex
+    val startRowPosition = piece.boardPosition.rowIndex + 1
+    val columnIndex = piece.boardPosition.columnIndex
     (startRowPosition until 8).forEachIndexed { step, rowIndex ->
       if (step >= piece.maxTakeSteps()) {
         return possibleTakes
@@ -57,7 +57,7 @@ class VerticalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
       if (nextPiece == null) {
         //move on
       } else {
-        if (nextPiece.isOpposite(piece)) {
+        if (piece.direction != nextPiece.direction) {
           possibleTakes.add(nextVerticalPosition)
         }
         return possibleTakes
@@ -65,5 +65,4 @@ class VerticalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     }
     return possibleTakes
   }
-
 }

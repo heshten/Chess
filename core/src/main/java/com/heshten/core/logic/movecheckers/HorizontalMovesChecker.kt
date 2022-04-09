@@ -24,8 +24,8 @@ class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getRightSidePossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val rowIndex = piece.getCurrentPosition().rowIndex
-    val startColumnIndex = piece.getCurrentPosition().columnIndex + 1
+    val rowIndex = piece.boardPosition.rowIndex
+    val startColumnIndex = piece.boardPosition.columnIndex + 1
     (startColumnIndex until 8).forEachIndexed { step, columnIndex ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -42,8 +42,8 @@ class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
 
   private fun getLeftSidePossibleMoves(piece: Piece): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val rowIndex = piece.getCurrentPosition().rowIndex
-    val startColumnIndex = piece.getCurrentPosition().columnIndex - 1
+    val rowIndex = piece.boardPosition.rowIndex
+    val startColumnIndex = piece.boardPosition.columnIndex - 1
     (startColumnIndex downTo 0).forEachIndexed { step, columnIndex ->
       if (step >= piece.maxSteps()) {
         return possibleMoves
@@ -57,5 +57,4 @@ class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     }
     return possibleMoves
   }
-
 }

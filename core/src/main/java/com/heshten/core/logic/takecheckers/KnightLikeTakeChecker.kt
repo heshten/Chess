@@ -14,8 +14,8 @@ class KnightLikeTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
 
   private fun getPossibleKnightLikeTakes(piece: Piece): Set<BoardPosition> {
     val possiblePositions = mutableSetOf<BoardPosition>()
-    val startRowIndex = piece.getCurrentPosition().rowIndex
-    val startColumnIndex = piece.getCurrentPosition().columnIndex
+    val startRowIndex = piece.boardPosition.rowIndex
+    val startColumnIndex = piece.boardPosition.columnIndex
     val upLeftPosition = BoardPosition(startRowIndex - 2, startColumnIndex - 1)
     val upRightPosition = BoardPosition(startRowIndex - 2, startColumnIndex + 1)
     val leftUpPosition = BoardPosition(startRowIndex - 1, startColumnIndex - 2)
@@ -41,16 +41,9 @@ class KnightLikeTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     possiblePosition: BoardPosition,
     possibleTakesContainer: MutableSet<BoardPosition>
   ) {
-    if (!positionIsOnBoard(possiblePosition)) {
-      return
-    }
     val nextPiece = chessBoard.getPieceAtPosition(possiblePosition)
-    if (nextPiece != null && nextPiece.isOpposite(piece)) {
+    if (nextPiece != null && piece.direction != nextPiece.direction) {
       possibleTakesContainer.add(possiblePosition)
     }
-  }
-
-  private fun positionIsOnBoard(position: BoardPosition): Boolean {
-    return position.columnIndex in 0..7 && position.rowIndex in 0..7
   }
 }
