@@ -21,6 +21,16 @@ abstract class Piece(
     return pieceSide != otherPiece.pieceSide
   }
 
+  fun copy(): Piece = when(this) {
+    is Bishop -> Bishop(pieceSide, direction, getCurrentPosition())
+    is King -> Bishop(pieceSide, direction, getCurrentPosition())
+    is Knight -> Bishop(pieceSide, direction, getCurrentPosition())
+    is Pawn -> Bishop(pieceSide, direction, getCurrentPosition())
+    is Queen -> Bishop(pieceSide, direction, getCurrentPosition())
+    is Rook -> Bishop(pieceSide, direction, getCurrentPosition())
+    else -> throw IllegalStateException()
+  }
+
   open fun moveTo(position: BoardPosition) {
     boardPosition = position
   }

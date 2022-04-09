@@ -24,8 +24,11 @@ import com.heshten.core.models.PieceSide
 import com.heshten.core.models.pieces.*
 import com.heshten.core.validator.SideMoveValidator
 import com.heshten.engine.GameEngine
+import java.util.concurrent.Executor
 
 class MainViewModel(
+  private val engineMoveExecutor: Executor,
+  private val mainThreadExecutor: Executor,
   private val blackPieceResourceProvider: PieceResourceProvider,
   private val whitePieceResourceProvider: PieceResourceProvider
 ) : ViewModel() {
@@ -36,8 +39,14 @@ class MainViewModel(
   private val _currentSide = MutableLiveData<PieceSide>()
   val currentSide: LiveData<PieceSide> = _currentSide
 
+  private val _gameResult = MutableLiveData<GameResultUIModel>()
+  val gameResult: LiveData<GameResultUIModel> = _gameResult
+
   private val _boardUnits = MutableLiveData<Map<BoardPosition, BoardView.BoardUnit>>()
   val boardUnits: LiveData<Map<BoardPosition, BoardView.BoardUnit>> = _boardUnits
+
+  private val _lockBoardForUser = MutableLiveData(true)
+  val lockBoardForUser: LiveData<Boolean> = _lockBoardForUser
 
   fun startNewGame(playerSide: PieceSide) {
     val topSide = if (playerSide == PieceSide.WHITE) PieceSide.BLACK else PieceSide.WHITE
@@ -71,10 +80,20 @@ class MainViewModel(
       takeCheckerFacade,
       sideValidator,
       ::updateBoard,
+      ::onGameFinished,
     )
-    engine = GameEngine(game!!, board, topSide, sideValidator)
-    if (topSide == PieceSide.WHITE) {
-      engine?.performMove()
+    engine = GameEngine(game!!, board, topSide)
+    if (engine!!.engineSide == PieceSide.WHITE) {
+      performEngineMove()
+    } else {
+      _lockBoardForUser.value = false
+    }
+  }
+
+  fun clearResultShowFlag() {
+    val currentValue = gameResult.value
+    if (currentValue != null) {
+      _gameResult.value = currentValue.copy(showDialog = false)
     }
   }
 
@@ -84,7 +103,14 @@ class MainViewModel(
 
   private fun onSideChanged(side: PieceSide) {
     _currentSide.value = side
-    engine?.performMove()
+    if (side == engine?.engineSide) {
+      performEngineMove()
+    }
+  }
+
+  private fun onGameFinished(result: Game.GameResult) {
+    _lockBoardForUser.value = true
+    _gameResult.value = GameResultUIModel(result.winner, true)
   }
 
   private fun updateBoard(chessBoard: ChessBoard) {
@@ -102,6 +128,20 @@ class MainViewModel(
       }
     }
     _boardUnits.value = mutableUnitsMap
+  }
+
+  private fun performEngineMove() {
+    val engineLocal = engine ?: return
+    _lockBoardForUser.value = true
+    engineMoveExecutor.execute {
+      val nextMove = engineLocal.calculateNextMove()
+      mainThreadExecutor.execute {
+        _lockBoardForUser.value = false
+        // simulate the move
+        onPositionTouched(nextMove.fromPosition)
+        onPositionTouched(nextMove.toPosition)
+      }
+    }
   }
 
   private fun getBitmapForPiece(piece: Piece): Bitmap {
@@ -123,4 +163,9 @@ class MainViewModel(
       PieceSide.BLACK -> blackPieceResourceProvider
     }
   }
+
+  data class GameResultUIModel(
+    val winner: PieceSide,
+    val showDialog: Boolean
+  )
 }

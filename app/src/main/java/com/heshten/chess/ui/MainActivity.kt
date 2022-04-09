@@ -3,7 +3,10 @@ package com.heshten.chess.ui
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +19,8 @@ import com.heshten.chess.ui.views.BoardView
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 class MainActivity :
   AppCompatActivity(R.layout.activity_main), BoardView.OnPositionTouchListener {
@@ -32,6 +37,20 @@ class MainActivity :
     })
     viewModel.boardUnits.observe(this, { boardUnits ->
       boardView.submitUnits(boardUnits)
+    })
+    viewModel.lockBoardForUser.observe(this, { lockForUser ->
+      boardView.setUserInteractionAvailable(!lockForUser)
+    })
+    viewModel.gameResult.observe(this, { result ->
+      if (result.showDialog) {
+        AlertDialog.Builder(this)
+          .setTitle("Game has ended!")
+          .setMessage("Winner: ${result.winner.name}")
+          .setCancelable(true)
+          .setOnCancelListener { viewModel.clearResultShowFlag() }
+          .create()
+          .show()
+      }
     })
   }
 
@@ -63,7 +82,11 @@ class MainActivity :
   }
 
   private fun initViewModel() {
-    val factory = MainViewModelFactory(mutableMapOf(), resources)
+    val factory = MainViewModelFactory(
+      Executors.newSingleThreadExecutor(),
+      MainThreadExecutor(),
+      mutableMapOf(), resources
+    )
     viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
   }
 
@@ -92,15 +115,30 @@ class MainActivity :
   }
 
   private class MainViewModelFactory(
+    private val engineExecutor: Executor,
+    private val mainThreadExecutor: Executor,
     private val cache: MutableMap<Int, Bitmap>,
     private val resources: Resources
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
       return MainViewModel(
+        engineExecutor,
+        mainThreadExecutor,
         BlackPiecesResourceProvider(cache, resources),
         WhitePiecesResourceProvider(cache, resources)
       ) as T
+    }
+  }
+
+  private class MainThreadExecutor : Executor {
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    override fun execute(command: Runnable?) {
+      if (command != null) {
+        handler.post(command)
+      }
     }
   }
 }

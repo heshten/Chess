@@ -88,6 +88,10 @@ class BoardView @JvmOverloads constructor(
     onPositionTouchListener = listener
   }
 
+  fun setUserInteractionAvailable(available: Boolean) {
+    setOnTouchListener(if (available) this else null)
+  }
+
   private fun drawRow(canvas: Canvas, rowIndex: Int) {
     val isLightFirst = rowIndex % 2 == 0
     (0 until BOARD_SIZE).forEach { columnIndex ->

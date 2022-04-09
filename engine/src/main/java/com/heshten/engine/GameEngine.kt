@@ -4,50 +4,45 @@ import com.heshten.core.Game
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
-import com.heshten.core.validator.SideMoveValidator
 import java.util.*
 import kotlin.random.Random
 
 class GameEngine(
   private val game: Game,
   private val chessBoard: ChessBoard,
-  private val engineSide: PieceSide,
-  private val moveValidator: SideMoveValidator
+  val engineSide: PieceSide
 ) {
 
-  fun performMove() {
-    if (moveValidator.getCurrentSide() == engineSide) {
-      val rankMap = mutableMapOf<Int, MoveSimulation>()
-      chessBoard.getAllPieces().forEach { piece ->
-        if (piece.pieceSide == engineSide) {
-          val possibleMoves = game.getPossibleMovesForPiece(piece)
-          possibleMoves.forEach { possibleMovePosition ->
-            rankMap[calculateBoardRank(chessBoard, engineSide)] =
-              MoveSimulation(piece.getCurrentPosition(), possibleMovePosition)
-          }
+  fun calculateNextMove(): Move {
+    val rankMap = mutableMapOf<Int, Move>()
+    chessBoard.getAllPieces().forEach { piece ->
+      if (piece.pieceSide == engineSide) {
+        val possibleMoves = game.calculatePossibleMovesForPiece(piece)
+        possibleMoves.forEach { possibleMovePosition ->
+          val allPiecesMutableSet = chessBoard.getAllPieces().toMutableSet()
+          allPiecesMutableSet.remove(piece)
+          val pieceCopy = piece.copy()
+          pieceCopy.moveTo(possibleMovePosition)
+          allPiecesMutableSet.add(pieceCopy)
+          val chessboardSnapshot = ChessBoard(allPiecesMutableSet)
+          rankMap[calculateBoardRank(chessboardSnapshot, engineSide)] =
+            Move(piece.getCurrentPosition(), possibleMovePosition)
         }
       }
-      if (rankMap.isEmpty()) {
-        return
-      }
-      var topRankMove = rankMap.entries.first()
-      rankMap.entries.forEach { entry ->
-        if (entry.key > topRankMove.key) topRankMove = entry
-      }
-      // simulate move.
-      game.onPositionTouched(topRankMove.value.fromPosition)
-      game.onPositionTouched(topRankMove.value.toPosition)
     }
+    var topRankMove = rankMap.entries.first()
+    rankMap.entries.forEach { entry ->
+      if (entry.key > topRankMove.key) topRankMove = entry
+    }
+    return topRankMove.value
   }
 
   private fun calculateBoardRank(chessBoard: ChessBoard, side: PieceSide): Int {
-    // todo: Implement
-    val rank = Random(UUID.randomUUID().hashCode()).nextInt(0, 1000)
-    System.out.println(rank)
-    return rank
+    // todo: Implement rank calculation for each chessboard snapshot
+    return Random(UUID.randomUUID().hashCode()).nextInt(0, 1000)
   }
 
-  data class MoveSimulation(
+  data class Move(
     val fromPosition: BoardPosition,
     val toPosition: BoardPosition
   )
