@@ -1,7 +1,10 @@
 package com.heshten.core.board
 
 import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.Direction
+import com.heshten.core.models.pieces.Pawn
 import com.heshten.core.models.pieces.Piece
+import com.heshten.core.models.pieces.Queen
 
 /**
  * A board holder class that is the source of truth for the playing board.
@@ -38,12 +41,7 @@ class ChessBoard(pieces: Set<Piece>) {
       removePieceAtPosition(boardPosition)
     }
     pieces.remove(selectedPieceLocal)
-    pieces.add(
-      selectedPieceLocal.copy(
-        boardPosition = boardPosition,
-        firstMovePerformed = true
-      )
-    )
+    pieces.add(updatePiece(selectedPieceLocal, boardPosition))
     selectedPiece = null
   }
 
@@ -66,5 +64,17 @@ class ChessBoard(pieces: Set<Piece>) {
 
   fun getPieceAtPosition(boardPosition: BoardPosition): Piece? {
     return pieces.find { it.boardPosition == boardPosition }
+  }
+
+  private fun updatePiece(piece: Piece, boardPosition: BoardPosition): Piece {
+    if (piece is Pawn) {
+      // check if reached the end of the board
+      if ((piece.direction == Direction.DOWN && boardPosition.rowIndex == 7)
+        || (piece.direction == Direction.UP && boardPosition.rowIndex == 0)
+      ) {
+        return Queen(piece.pieceSide, piece.direction, boardPosition, piece.firstMovePerformed)
+      }
+    }
+    return piece.copy(boardPosition = boardPosition, firstMovePerformed = true)
   }
 }
