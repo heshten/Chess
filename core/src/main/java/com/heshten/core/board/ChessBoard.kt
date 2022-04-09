@@ -2,6 +2,7 @@ package com.heshten.core.board
 
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.Direction
+import com.heshten.core.models.pieces.King
 import com.heshten.core.models.pieces.Pawn
 import com.heshten.core.models.pieces.Piece
 import com.heshten.core.models.pieces.Queen
@@ -37,16 +38,60 @@ class ChessBoard(pieces: Set<Piece>) {
 
   fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
     val selectedPieceLocal = selectedPiece ?: return
-    if (hasPieceAtPosition(boardPosition)) {
-      removePieceAtPosition(boardPosition)
+    // check if castling
+    if (selectedPieceLocal is King) {
+      if (
+        selectedPieceLocal.firstMovePerformed.not() &&
+        selectedPieceLocal.direction == Direction.UP &&
+        boardPosition.rowIndex == 7 &&
+        boardPosition.columnIndex == 6
+      ) {
+        val castlingRook = getPieceAtPosition(BoardPosition(7, 7))!!
+        val updatedRook = updatePiece(castlingRook, BoardPosition(7, 5))
+        pieces.remove(castlingRook)
+        pieces.add(updatedRook)
+      }
+      if (
+        selectedPieceLocal.firstMovePerformed.not() &&
+        selectedPieceLocal.direction == Direction.DOWN &&
+        boardPosition.rowIndex == 0 &&
+        boardPosition.columnIndex == 6
+      ) {
+        val castlingRook = getPieceAtPosition(BoardPosition(0, 7))!!
+        val updatedRook = updatePiece(castlingRook, BoardPosition(0, 5))
+        pieces.remove(castlingRook)
+        pieces.add(updatedRook)
+      }
+      if (
+        selectedPieceLocal.firstMovePerformed.not() &&
+        selectedPieceLocal.direction == Direction.UP &&
+        boardPosition.rowIndex == 7 &&
+        boardPosition.columnIndex == 2
+      ) {
+        val castlingRook = getPieceAtPosition(BoardPosition(7, 0))!!
+        val updatedRook = updatePiece(castlingRook, BoardPosition(7, 3))
+        pieces.remove(castlingRook)
+        pieces.add(updatedRook)
+      }
+      if (
+        selectedPieceLocal.firstMovePerformed.not() &&
+        selectedPieceLocal.direction == Direction.DOWN &&
+        boardPosition.rowIndex == 0 &&
+        boardPosition.columnIndex == 2
+      ) {
+        val castlingRook = getPieceAtPosition(BoardPosition(0, 0))!!
+        val updatedRook = updatePiece(castlingRook, BoardPosition(0, 3))
+        pieces.remove(castlingRook)
+        pieces.add(updatedRook)
+      }
     }
+    if (hasPieceAtPosition(boardPosition)) {
+      pieces.remove(getPieceAtPosition(boardPosition))
+    }
+    val updatedPiece = updatePiece(selectedPieceLocal, boardPosition)
     pieces.remove(selectedPieceLocal)
-    pieces.add(updatePiece(selectedPieceLocal, boardPosition))
+    pieces.add(updatedPiece)
     selectedPiece = null
-  }
-
-  fun removePieceAtPosition(boardPosition: BoardPosition) {
-    pieces.remove(getPieceAtPosition(boardPosition))
   }
 
   fun selectPiece(piece: Piece) {

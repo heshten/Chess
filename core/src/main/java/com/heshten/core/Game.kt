@@ -59,7 +59,8 @@ class Game(
   }
 
   private fun isCheck(side: PieceSide): Boolean {
-    return possibleMovesCalculator.isCheck(chessBoard, side)
+    val king = chessBoard.getAllPieces().first { it.pieceSide == side && it is King }
+    return possibleMovesCalculator.isUnderAttack(king, chessBoard)
   }
 
   private fun hasNextMoves(side: PieceSide): Boolean {
