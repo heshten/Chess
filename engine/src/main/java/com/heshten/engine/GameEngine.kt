@@ -4,8 +4,8 @@ import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.PossibleMovesCalculator
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
-import java.util.*
-import kotlin.random.Random
+import com.heshten.core.models.opposite
+import com.heshten.core.models.pieces.*
 
 class GameEngine(
   val engineSide: PieceSide,
@@ -20,10 +20,12 @@ class GameEngine(
         val possibleMoves = possibleMovesCalculator
           .calculatePossibleMovesForPiece(piece, chessBoard)
         possibleMoves.forEach { possibleMovePosition ->
+
           val allPiecesMutableSet = chessBoard.getAllPieces().toMutableSet()
           val chessboardSnapshot = ChessBoard(allPiecesMutableSet)
           chessboardSnapshot.selectPiece(piece)
           chessboardSnapshot.moveSelectedPieceToPosition(possibleMovePosition)
+
           rankMap[calculateBoardRank(chessboardSnapshot, engineSide)] =
             Move(piece.boardPosition, possibleMovePosition)
         }
@@ -40,8 +42,42 @@ class GameEngine(
   }
 
   private fun calculateBoardRank(chessBoard: ChessBoard, side: PieceSide): Int {
-    // todo: Implement rank calculation for each chessboard snapshot
-    return Random(UUID.randomUUID().hashCode()).nextInt(0, 1000)
+    // find all possible attacks
+    val currentPiecesUnderAttack = calculatePiecesUnderAttack(chessBoard, side)
+    val oppositePiecesUnderAttack = calculatePiecesUnderAttack(chessBoard, side.opposite())
+    var rank = 0
+    currentPiecesUnderAttack.forEach { piece -> rank -= getPieceRank(piece) }
+    oppositePiecesUnderAttack.forEach { piece -> rank += getPieceRank(piece) }
+    return rank
+  }
+
+  private fun calculatePiecesUnderAttack(chessBoard: ChessBoard, side: PieceSide): Set<Piece> {
+    val pieces = chessBoard.getAllPieces().filter { it.pieceSide == side }.toSet()
+    val piecesUnderAttack = mutableSetOf<Piece>()
+    pieces.forEach { piece ->
+      val possibleMoves = possibleMovesCalculator
+        .calculatePossibleMovesForPiece(piece, chessBoard)
+      possibleMoves.forEach { movePosition ->
+        val pieceAtPosition = pieces
+          .find { it.boardPosition == movePosition }
+        if (pieceAtPosition != null) {
+          piecesUnderAttack.add(pieceAtPosition)
+        }
+      }
+    }
+    return piecesUnderAttack
+  }
+
+  private fun getPieceRank(piece: Piece): Int {
+    return when (piece) {
+      is Bishop -> 25
+      is King -> 100
+      is Knight -> 15
+      is Pawn -> 5
+      is Queen -> 50
+      is Rook -> 35
+      else -> throw IllegalArgumentException()
+    }
   }
 
   data class Move(
