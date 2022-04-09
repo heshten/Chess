@@ -10,8 +10,6 @@ class Pawn(
   position: BoardPosition
 ) : Piece(side, direction, position) {
 
-  private var firstStepPerformed = false
-
   override fun canMoveVertically(): Boolean = true
 
   override fun canMoveHorizontally(): Boolean = false
@@ -32,16 +30,10 @@ class Pawn(
 
   override fun canTakeBehind(): Boolean = false
 
-  override fun maxSteps(): Int = when (firstStepPerformed) {
+  override fun maxSteps(): Int = when (firstMovePerformed()) {
     true -> 1
     false -> 2
   }
 
   override fun maxTakeSteps(): Int = 1
-
-  override fun moveTo(position: BoardPosition) {
-    super.moveTo(position)
-    firstStepPerformed = true
-  }
-
 }

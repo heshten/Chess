@@ -21,6 +21,7 @@ import com.heshten.core.logic.takecheckers.KnightLikeTakeChecker
 import com.heshten.core.logic.takecheckers.VerticalTakeChecker
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
+import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.*
 import com.heshten.core.validator.SideMoveValidator
 import com.heshten.engine.GameEngine
@@ -49,7 +50,7 @@ class MainViewModel(
   val lockBoardForUser: LiveData<Boolean> = _lockBoardForUser
 
   fun startNewGame(playerSide: PieceSide) {
-    val topSide = if (playerSide == PieceSide.WHITE) PieceSide.BLACK else PieceSide.WHITE
+    val topSide = playerSide.opposite()
     //di
     val newGameBoardCreator = NewGameBoardCreator()
     val board = ChessBoard(newGameBoardCreator.createNewBoard(topSide, playerSide))

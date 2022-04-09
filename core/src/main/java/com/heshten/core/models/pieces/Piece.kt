@@ -13,12 +13,18 @@ abstract class Piece(
   private var boardPosition: BoardPosition
 ) : MoveMarker, TakeMarker, StepMarker {
 
+  private var firstMovePerformed = false
+
   fun getCurrentPosition(): BoardPosition {
     return boardPosition
   }
 
   fun isOpposite(otherPiece: Piece): Boolean {
     return pieceSide != otherPiece.pieceSide
+  }
+
+  fun firstMovePerformed(): Boolean {
+    return firstMovePerformed
   }
 
   fun copy(): Piece = when(this) {
@@ -31,7 +37,8 @@ abstract class Piece(
     else -> throw IllegalStateException()
   }
 
-  open fun moveTo(position: BoardPosition) {
+  fun moveTo(position: BoardPosition) {
+    firstMovePerformed = true
     boardPosition = position
   }
 }

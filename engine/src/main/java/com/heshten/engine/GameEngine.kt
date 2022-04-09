@@ -34,6 +34,8 @@ class GameEngine(
     rankMap.entries.forEach { entry ->
       if (entry.key > topRankMove.key) topRankMove = entry
     }
+    // simulate "thinking"
+    Thread.sleep(300)
     return topRankMove.value
   }
 

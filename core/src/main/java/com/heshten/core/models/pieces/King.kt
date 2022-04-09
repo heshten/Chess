@@ -33,5 +33,4 @@ class King(
   override fun maxSteps(): Int = 1
 
   override fun maxTakeSteps(): Int = 1
-
 }
