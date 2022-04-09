@@ -1,6 +1,7 @@
 package com.heshten.core.logic.takecheckers
 
 import com.heshten.core.board.ChessBoard
+import com.heshten.core.logic.PositionExcluder
 import com.heshten.core.logic.TakeChecker
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.pieces.Piece
@@ -17,6 +18,7 @@ class VerticalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     val possibleDownTakes = getPossibleVerticalDownTakes(piece)
     possibleTakes.addAll(possibleUpTakes)
     possibleTakes.addAll(possibleDownTakes)
+    PositionExcluder.excludePositionsOutOfBoardInPlace(possibleTakes)
     return possibleTakes
   }
 

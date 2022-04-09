@@ -2,6 +2,7 @@ package com.heshten.core.logic.movecheckers
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.MoveChecker
+import com.heshten.core.logic.PositionExcluder
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.pieces.Piece
 
@@ -31,6 +32,7 @@ class KnightLikeMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     maybeAddPossiblePosition(rightDownPosition, possiblePositions)
     maybeAddPossiblePosition(bottomLeftPosition, possiblePositions)
     maybeAddPossiblePosition(bottomRightPosition, possiblePositions)
+    PositionExcluder.excludePositionsOutOfBoardInPlace(possiblePositions)
     return possiblePositions
   }
 

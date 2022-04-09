@@ -27,6 +27,9 @@ class GameEngine(
           }
         }
       }
+      if (rankMap.isEmpty()) {
+        return
+      }
       var topRankMove = rankMap.entries.first()
       rankMap.entries.forEach { entry ->
         if (entry.key > topRankMove.key) topRankMove = entry

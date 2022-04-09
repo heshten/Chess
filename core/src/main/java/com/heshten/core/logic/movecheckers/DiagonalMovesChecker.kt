@@ -2,6 +2,7 @@ package com.heshten.core.logic.movecheckers
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.MoveChecker
+import com.heshten.core.logic.PositionExcluder
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.pieces.Piece
 
@@ -21,6 +22,7 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     possibleMoves.addAll(rightUpPossibleMoves)
     possibleMoves.addAll(leftDownPossibleMoves)
     possibleMoves.addAll(rightDownPossibleMoves)
+    PositionExcluder.excludePositionsOutOfBoardInPlace(possibleMoves)
     return possibleMoves
   }
 
@@ -34,9 +36,7 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidLeftUpPosition =
         BoardPosition(startRowIndex - shift, startColumnIndex - shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidLeftUpPosition)
-        && positionIsOnBoard(nextValidLeftUpPosition)
-      ) {
+      if (!chessBoard.hasPieceAtPosition(nextValidLeftUpPosition)) {
         possibleMoves.add(nextValidLeftUpPosition)
       } else {
         return possibleMoves
@@ -55,9 +55,7 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidRightUpPosition =
         BoardPosition(startRowIndex - shift, startColumnIndex + shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidRightUpPosition)
-        && positionIsOnBoard(nextValidRightUpPosition)
-      ) {
+      if (!chessBoard.hasPieceAtPosition(nextValidRightUpPosition)) {
         possibleMoves.add(nextValidRightUpPosition)
       } else {
         return possibleMoves
@@ -76,9 +74,7 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidLeftDownPosition =
         BoardPosition(startRowIndex + shift, startColumnIndex - shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidLeftDownPosition)
-        && positionIsOnBoard(nextValidLeftDownPosition)
-      ) {
+      if (!chessBoard.hasPieceAtPosition(nextValidLeftDownPosition)) {
         possibleMoves.add(nextValidLeftDownPosition)
       } else {
         return possibleMoves
@@ -97,18 +93,12 @@ class DiagonalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
       }
       val nextValidRightDownPosition =
         BoardPosition(startRowIndex + shift, startColumnIndex + shift)
-      if (!chessBoard.hasPieceAtPosition(nextValidRightDownPosition)
-        && positionIsOnBoard(nextValidRightDownPosition)
-      ) {
+      if (!chessBoard.hasPieceAtPosition(nextValidRightDownPosition)) {
         possibleMoves.add(nextValidRightDownPosition)
       } else {
         return possibleMoves
       }
     }
     return possibleMoves
-  }
-
-  private fun positionIsOnBoard(position: BoardPosition): Boolean {
-    return position.columnIndex in 0..7 && position.rowIndex in 0..7
   }
 }

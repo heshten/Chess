@@ -1,6 +1,7 @@
 package com.heshten.core.logic.takecheckers
 
 import com.heshten.core.board.ChessBoard
+import com.heshten.core.logic.PositionExcluder
 import com.heshten.core.logic.TakeChecker
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.Direction
@@ -36,7 +37,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         }
       }
     }
-
+    PositionExcluder.excludePositionsOutOfBoardInPlace(possibleTakes)
     return possibleTakes
   }
 

@@ -2,6 +2,7 @@ package com.heshten.core.logic.movecheckers
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.MoveChecker
+import com.heshten.core.logic.PositionExcluder
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.pieces.Piece
 
@@ -17,6 +18,7 @@ class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     val leftSideMoves = getLeftSidePossibleMoves(piece)
     possibleMoves.addAll(rightSideMoves)
     possibleMoves.addAll(leftSideMoves)
+    PositionExcluder.excludePositionsOutOfBoardInPlace(possibleMoves)
     return possibleMoves
   }
 
