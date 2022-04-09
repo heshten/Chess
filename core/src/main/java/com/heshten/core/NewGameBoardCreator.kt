@@ -24,8 +24,8 @@ class NewGameBoardCreator {
       Knight(side, Direction.DOWN, BoardPosition(0, 6), false),
       Bishop(side, Direction.DOWN, BoardPosition(0, 2), false),
       Bishop(side, Direction.DOWN, BoardPosition(0, 5), false),
-      King(side, Direction.DOWN, BoardPosition(0, 3), false),
-      Queen(side, Direction.DOWN, BoardPosition(0, 4), false),
+      King(side, Direction.DOWN, BoardPosition(0, 4), false),
+      Queen(side, Direction.DOWN, BoardPosition(0, 3), false),
       //pawns
       Pawn(side, Direction.DOWN, BoardPosition(1, 0), false),
       Pawn(side, Direction.DOWN, BoardPosition(1, 1), false),
@@ -46,8 +46,8 @@ class NewGameBoardCreator {
       Knight(side, Direction.UP, BoardPosition(7, 6), false),
       Bishop(side, Direction.UP, BoardPosition(7, 2), false),
       Bishop(side, Direction.UP, BoardPosition(7, 5), false),
-      King(side, Direction.UP, BoardPosition(7, 3), false),
-      Queen(side, Direction.UP, BoardPosition(7, 4), false),
+      King(side, Direction.UP, BoardPosition(7, 4), false),
+      Queen(side, Direction.UP, BoardPosition(7, 3), false),
       //pawns
       Pawn(side, Direction.UP, BoardPosition(6, 0), false),
       Pawn(side, Direction.UP, BoardPosition(6, 1), false),
