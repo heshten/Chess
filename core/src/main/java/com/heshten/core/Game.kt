@@ -5,6 +5,7 @@ import com.heshten.core.logic.PossibleMovesCalculator
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
 import com.heshten.core.models.opposite
+import com.heshten.core.models.pieces.King
 import com.heshten.core.models.pieces.Piece
 import com.heshten.core.validator.SideMoveValidator
 
@@ -58,6 +59,19 @@ class Game(
   }
 
   private fun isCheck(side: PieceSide): Boolean {
+    val allPieces = chessBoard.getAllPieces()
+    val king = allPieces.first {
+      it.pieceSide == side && it is King
+    }
+    allPieces
+      .filter { it.pieceSide != side }
+      .forEach { piece ->
+        val possibleMoves =
+          possibleMovesCalculator.calculatePossibleMovesForPiece(piece, chessBoard)
+        if (possibleMoves.contains(king.boardPosition)) {
+          return true
+        }
+      }
     return false
   }
 
