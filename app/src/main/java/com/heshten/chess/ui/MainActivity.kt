@@ -16,6 +16,7 @@ import com.heshten.chess.R
 import com.heshten.chess.ui.recources.BlackPiecesResourceProvider
 import com.heshten.chess.ui.recources.WhitePiecesResourceProvider
 import com.heshten.chess.ui.views.BoardView
+import com.heshten.core.Game
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
 import kotlinx.android.synthetic.main.activity_main.*
@@ -43,9 +44,13 @@ class MainActivity :
     })
     viewModel.gameResult.observe(this, { result ->
       if (result.showDialog) {
+        val message = when (result.gameResult) {
+          Game.GameResult.Draw -> "Draw!"
+          is Game.GameResult.Winner -> "Winner: ${result.gameResult.side.name}!"
+        }
         AlertDialog.Builder(this)
           .setTitle("Game has ended!")
-          .setMessage("Winner: ${result.winner.name}")
+          .setMessage(message)
           .setCancelable(true)
           .setOnCancelListener { viewModel.clearResultShowFlag() }
           .create()

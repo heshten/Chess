@@ -2,7 +2,7 @@ package com.heshten.core.logic
 
 import com.heshten.core.models.BoardPosition
 
-object PositionExcluder {
+object PositionExclude {
 
   fun excludePositionsOutOfBoardInPlace(target: MutableSet<BoardPosition>) {
     target.removeAll { !positionIsOnBoard(it) }

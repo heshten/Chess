@@ -2,17 +2,17 @@ package com.heshten.core.logic.movecheckers
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.MoveChecker
-import com.heshten.core.logic.PositionExcluder
+import com.heshten.core.logic.PositionExclude
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.pieces.Piece
 
-class KnightLikeMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
+class KnightLikeMovesChecker : MoveChecker {
 
-  override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-    return getKnightLikePossibleMoves(piece)
+  override fun getPossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
+    return getKnightLikePossibleMoves(piece, chessBoard)
   }
 
-  private fun getKnightLikePossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getKnightLikePossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possiblePositions = mutableSetOf<BoardPosition>()
     val startRowIndex = piece.boardPosition.rowIndex
     val startColumnIndex = piece.boardPosition.columnIndex
@@ -24,28 +24,25 @@ class KnightLikeMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     val rightDownPosition = BoardPosition(startRowIndex + 1, startColumnIndex + 2)
     val bottomLeftPosition = BoardPosition(startRowIndex + 2, startColumnIndex - 1)
     val bottomRightPosition = BoardPosition(startRowIndex + 2, startColumnIndex + 1)
-    maybeAddPossiblePosition(upLeftPosition, possiblePositions)
-    maybeAddPossiblePosition(upRightPosition, possiblePositions)
-    maybeAddPossiblePosition(leftUpPosition, possiblePositions)
-    maybeAddPossiblePosition(leftDownPosition, possiblePositions)
-    maybeAddPossiblePosition(rightUpPosition, possiblePositions)
-    maybeAddPossiblePosition(rightDownPosition, possiblePositions)
-    maybeAddPossiblePosition(bottomLeftPosition, possiblePositions)
-    maybeAddPossiblePosition(bottomRightPosition, possiblePositions)
-    PositionExcluder.excludePositionsOutOfBoardInPlace(possiblePositions)
+    maybeAddPossiblePosition(chessBoard, upLeftPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, upRightPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, leftUpPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, leftDownPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, rightUpPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, rightDownPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, bottomLeftPosition, possiblePositions)
+    maybeAddPossiblePosition(chessBoard, bottomRightPosition, possiblePositions)
+    PositionExclude.excludePositionsOutOfBoardInPlace(possiblePositions)
     return possiblePositions
   }
 
   private fun maybeAddPossiblePosition(
+    chessBoard: ChessBoard,
     possiblePosition: BoardPosition,
     possibleMovesContainer: MutableSet<BoardPosition>
   ) {
-    if (positionIsOnBoard(possiblePosition) && !chessBoard.hasPieceAtPosition(possiblePosition)) {
+    if (!chessBoard.hasPieceAtPosition(possiblePosition)) {
       possibleMovesContainer.add(possiblePosition)
     }
-  }
-
-  private fun positionIsOnBoard(position: BoardPosition): Boolean {
-    return position.columnIndex in 0..7 && position.rowIndex in 0..7
   }
 }

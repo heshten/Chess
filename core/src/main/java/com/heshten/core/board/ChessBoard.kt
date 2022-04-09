@@ -34,6 +34,9 @@ class ChessBoard(pieces: Set<Piece>) {
 
   fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
     val selectedPieceLocal = selectedPiece ?: return
+    if (hasPieceAtPosition(boardPosition)) {
+      removePieceAtPosition(boardPosition)
+    }
     pieces.remove(selectedPieceLocal)
     pieces.add(
       selectedPieceLocal.copy(

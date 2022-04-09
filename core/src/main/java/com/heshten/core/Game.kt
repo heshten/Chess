@@ -1,83 +1,79 @@
 package com.heshten.core
 
 import com.heshten.core.board.ChessBoard
-import com.heshten.core.logic.MoveChecker
-import com.heshten.core.logic.TakeChecker
+import com.heshten.core.logic.PossibleMovesCalculator
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
 import com.heshten.core.models.opposite
-import com.heshten.core.models.pieces.King
 import com.heshten.core.models.pieces.Piece
 import com.heshten.core.validator.SideMoveValidator
 
 class Game(
   private val chessBoard: ChessBoard,
-  private val movesCheckerFacade: MoveChecker,
-  private val takesCheckerFacade: TakeChecker,
+  private val possibleMovesCalculator: PossibleMovesCalculator,
   private val sideMoveValidator: SideMoveValidator,
   private val redrawBoard: (ChessBoard) -> Unit,
   private val gameFinished: (GameResult) -> Unit
 ) {
 
-  init {
-    redrawBoard()
-  }
-
   fun onPositionTouched(boardPosition: BoardPosition) {
     val pieceAtPosition = chessBoard.getPieceAtPosition(boardPosition)
-    if (pieceAtPosition == null) {
-      if (chessBoard.isPossibleMoveTo(boardPosition)) {
-        moveSelectedPieceToPosition(boardPosition)
-      }
-    } else {
-      if (chessBoard.isPossibleMoveTo(boardPosition)) {
-        moveSelectedPieceToPosition(boardPosition)
-      } else {
-        selectPiece(pieceAtPosition)
-      }
+    if (chessBoard.isPossibleMoveTo(boardPosition)) {
+      moveSelectedPieceToPosition(boardPosition)
+    } else if (pieceAtPosition != null) {
+      selectPiece(pieceAtPosition)
     }
-  }
-
-  fun calculatePossibleMovesForPiece(piece: Piece): Set<BoardPosition> {
-    val possibleMoves = mutableSetOf<BoardPosition>()
-    possibleMoves.addAll(movesCheckerFacade.getPossibleMoves(piece))
-    possibleMoves.addAll(takesCheckerFacade.getPossibleTakes(piece))
-    return possibleMoves
   }
 
   private fun selectPiece(piece: Piece) {
     if (sideMoveValidator.getCurrentSide() == piece.pieceSide) {
-      chessBoard.setPossibleMoves(calculatePossibleMovesForPiece(piece))
+      val possibleMoves = possibleMovesCalculator.calculatePossibleMovesForPiece(piece, chessBoard)
+      chessBoard.setPossibleMoves(possibleMoves)
       chessBoard.selectPiece(piece)
       redrawBoard()
     }
   }
 
   private fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
-    if (chessBoard.hasPieceAtPosition(boardPosition)) {
-      val takingPiece = requireNotNull(chessBoard.getPieceAtPosition(boardPosition))
-      if (takingPiece is King) {
-        val winnerSide = takingPiece.pieceSide.opposite()
-        chessBoard.removePieceAtPosition(boardPosition)
-        chessBoard.moveSelectedPieceToPosition(boardPosition)
-        chessBoard.clearPossibleMovesPositions()
-        redrawBoard()
-        gameFinished.invoke(GameResult(winnerSide))
-        return
-      }
-      chessBoard.removePieceAtPosition(boardPosition)
-    }
     chessBoard.moveSelectedPieceToPosition(boardPosition)
     chessBoard.clearPossibleMovesPositions()
-    sideMoveValidator.changeSide()
-    redrawBoard()
+    val nextMoveSide = sideMoveValidator.getCurrentSide().opposite()
+    val hasNextMoves = hasNextMoves(nextMoveSide)
+    if (isCheck(nextMoveSide) && !hasNextMoves) {
+      // check and mate
+      gameFinished.invoke(GameResult.Winner(sideMoveValidator.getCurrentSide()))
+      redrawBoard()
+    } else if (!hasNextMoves) {
+      // draw
+      gameFinished.invoke(GameResult.Draw)
+      redrawBoard()
+    } else {
+      sideMoveValidator.changeSide()
+      redrawBoard()
+    }
   }
 
   private fun redrawBoard() {
     redrawBoard.invoke(chessBoard)
   }
 
-  data class GameResult(
-    val winner: PieceSide
-  )
+  private fun isCheck(side: PieceSide): Boolean {
+    return false
+  }
+
+  private fun hasNextMoves(side: PieceSide): Boolean {
+    var possibleMoves = 0
+    chessBoard.getAllPieces()
+      .filter { it.pieceSide == side }
+      .forEach { piece ->
+        possibleMoves += possibleMovesCalculator
+          .calculatePossibleMovesForPiece(piece, chessBoard).size
+      }
+    return possibleMoves > 0
+  }
+
+  sealed class GameResult {
+    object Draw : GameResult()
+    data class Winner(val side: PieceSide) : GameResult()
+  }
 }

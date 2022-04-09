@@ -1,23 +1,24 @@
 package com.heshten.engine
 
-import com.heshten.core.Game
 import com.heshten.core.board.ChessBoard
+import com.heshten.core.logic.PossibleMovesCalculator
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
 import java.util.*
 import kotlin.random.Random
 
 class GameEngine(
-  private val game: Game,
+  val engineSide: PieceSide,
   private val chessBoard: ChessBoard,
-  val engineSide: PieceSide
+  private val possibleMovesCalculator: PossibleMovesCalculator
 ) {
 
   fun calculateNextMove(): Move {
     val rankMap = mutableMapOf<Int, Move>()
     chessBoard.getAllPieces().forEach { piece ->
       if (piece.pieceSide == engineSide) {
-        val possibleMoves = game.calculatePossibleMovesForPiece(piece)
+        val possibleMoves = possibleMovesCalculator
+          .calculatePossibleMovesForPiece(piece, chessBoard)
         possibleMoves.forEach { possibleMovePosition ->
           val allPiecesMutableSet = chessBoard.getAllPieces().toMutableSet()
           val chessboardSnapshot = ChessBoard(allPiecesMutableSet)
@@ -28,12 +29,13 @@ class GameEngine(
         }
       }
     }
+
     var topRankMove = rankMap.entries.first()
     rankMap.entries.forEach { entry ->
       if (entry.key > topRankMove.key) topRankMove = entry
     }
     // simulate "thinking"
-    Thread.sleep(300)
+    Thread.sleep(200)
     return topRankMove.value
   }
 

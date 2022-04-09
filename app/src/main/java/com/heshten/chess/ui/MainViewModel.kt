@@ -9,6 +9,7 @@ import com.heshten.chess.ui.views.BoardView
 import com.heshten.core.Game
 import com.heshten.core.NewGameBoardCreator
 import com.heshten.core.board.ChessBoard
+import com.heshten.core.logic.PossibleMovesCalculator
 import com.heshten.core.logic.facedes.MoveCheckerFacade
 import com.heshten.core.logic.facedes.TakeCheckerFacade
 import com.heshten.core.logic.movecheckers.DiagonalMovesChecker
@@ -54,14 +55,14 @@ class MainViewModel(
     //di
     val newGameBoardCreator = NewGameBoardCreator()
     val board = ChessBoard(newGameBoardCreator.createNewBoard(topSide, playerSide))
-    val horizontalMovesChecker = HorizontalMovesChecker(board)
-    val knightLikeMovesChecker = KnightLikeMovesChecker(board)
-    val verticalMovesChecker = VerticalMovesChecker(board)
-    val diagonalMovesChecker = DiagonalMovesChecker(board)
-    val horizontalTakesChecker = HorizontalTakeChecker(board)
-    val knightLikeTakesChecker = KnightLikeTakeChecker(board)
-    val verticalTakesChecker = VerticalTakeChecker(board)
-    val diagonalTakesChecker = DiagonalTakeChecker(board)
+    val horizontalMovesChecker = HorizontalMovesChecker()
+    val knightLikeMovesChecker = KnightLikeMovesChecker()
+    val verticalMovesChecker = VerticalMovesChecker()
+    val diagonalMovesChecker = DiagonalMovesChecker()
+    val horizontalTakesChecker = HorizontalTakeChecker()
+    val knightLikeTakesChecker = KnightLikeTakeChecker()
+    val verticalTakesChecker = VerticalTakeChecker()
+    val diagonalTakesChecker = DiagonalTakeChecker()
     val sideValidator = SideMoveValidator(::onSideChanged)
     val moveCheckerFacade = MoveCheckerFacade(
       horizontalMovesChecker,
@@ -75,18 +76,20 @@ class MainViewModel(
       knightLikeTakesChecker,
       verticalTakesChecker
     )
+    val possibleMovesCalculator = PossibleMovesCalculator(moveCheckerFacade, takeCheckerFacade)
     game = Game(
       board,
-      moveCheckerFacade,
-      takeCheckerFacade,
+      possibleMovesCalculator,
       sideValidator,
       ::updateBoard,
       ::onGameFinished,
     )
-    engine = GameEngine(game!!, board, topSide)
-    if (engine!!.engineSide == PieceSide.WHITE) {
+    engine = GameEngine(topSide, board, possibleMovesCalculator)
+    if (topSide == PieceSide.WHITE) {
+      updateBoard(board)
       performEngineMove()
     } else {
+      updateBoard(board)
       _lockBoardForUser.value = false
     }
   }
@@ -111,7 +114,7 @@ class MainViewModel(
 
   private fun onGameFinished(result: Game.GameResult) {
     _lockBoardForUser.value = true
-    _gameResult.value = GameResultUIModel(result.winner, true)
+    _gameResult.value = GameResultUIModel(result, true)
   }
 
   private fun updateBoard(chessBoard: ChessBoard) {
@@ -166,7 +169,7 @@ class MainViewModel(
   }
 
   data class GameResultUIModel(
-    val winner: PieceSide,
+    val gameResult: Game.GameResult,
     val showDialog: Boolean
   )
 }

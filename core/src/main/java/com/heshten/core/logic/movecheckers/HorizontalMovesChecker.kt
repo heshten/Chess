@@ -2,27 +2,27 @@ package com.heshten.core.logic.movecheckers
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.MoveChecker
-import com.heshten.core.logic.PositionExcluder
+import com.heshten.core.logic.PositionExclude
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.pieces.Piece
 
-class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
+class HorizontalMovesChecker : MoveChecker {
 
-  override fun getPossibleMoves(piece: Piece): Set<BoardPosition> {
-    return getPossibleHorizontalMoves(piece)
+  override fun getPossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
+    return getPossibleHorizontalMoves(piece, chessBoard)
   }
 
-  private fun getPossibleHorizontalMoves(piece: Piece): Set<BoardPosition> {
+  private fun getPossibleHorizontalMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
-    val rightSideMoves = getRightSidePossibleMoves(piece)
-    val leftSideMoves = getLeftSidePossibleMoves(piece)
+    val rightSideMoves = getRightSidePossibleMoves(piece, chessBoard)
+    val leftSideMoves = getLeftSidePossibleMoves(piece, chessBoard)
     possibleMoves.addAll(rightSideMoves)
     possibleMoves.addAll(leftSideMoves)
-    PositionExcluder.excludePositionsOutOfBoardInPlace(possibleMoves)
+    PositionExclude.excludePositionsOutOfBoardInPlace(possibleMoves)
     return possibleMoves
   }
 
-  private fun getRightSidePossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getRightSidePossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
     val rowIndex = piece.boardPosition.rowIndex
     val startColumnIndex = piece.boardPosition.columnIndex + 1
@@ -40,7 +40,7 @@ class HorizontalMovesChecker(private val chessBoard: ChessBoard) : MoveChecker {
     return possibleMoves
   }
 
-  private fun getLeftSidePossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getLeftSidePossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
     val rowIndex = piece.boardPosition.rowIndex
     val startColumnIndex = piece.boardPosition.columnIndex - 1

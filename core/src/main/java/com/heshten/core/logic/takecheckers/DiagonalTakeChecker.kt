@@ -1,25 +1,24 @@
 package com.heshten.core.logic.takecheckers
 
 import com.heshten.core.board.ChessBoard
-import com.heshten.core.logic.PositionExcluder
+import com.heshten.core.logic.PositionExclude
 import com.heshten.core.logic.TakeChecker
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.Direction
-import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.Piece
 
-class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
+class DiagonalTakeChecker : TakeChecker {
 
-  override fun getPossibleTakes(piece: Piece): Set<BoardPosition> {
-    return getPossibleDiagonalTakes(piece)
+  override fun getPossibleTakes(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
+    return getPossibleDiagonalTakes(piece, chessBoard)
   }
 
-  private fun getPossibleDiagonalTakes(piece: Piece): Set<BoardPosition> {
+  private fun getPossibleDiagonalTakes(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
-    val leftUpPossibleTakes = getLeftUpPossibleMoves(piece)
-    val rightUpPossibleTakes = getRightUpPossibleMoves(piece)
-    val leftDownPossibleTakes = getLeftDownPossibleMoves(piece)
-    val rightDownPossibleTakes = getRightDownPossibleMoves(piece)
+    val leftUpPossibleTakes = getLeftUpPossibleMoves(piece, chessBoard)
+    val rightUpPossibleTakes = getRightUpPossibleMoves(piece, chessBoard)
+    val leftDownPossibleTakes = getLeftDownPossibleMoves(piece, chessBoard)
+    val rightDownPossibleTakes = getRightDownPossibleMoves(piece, chessBoard)
     if (piece.canMoveBehind()) {
       possibleTakes.addAll(leftUpPossibleTakes)
       possibleTakes.addAll(rightUpPossibleTakes)
@@ -38,11 +37,11 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
         }
       }
     }
-    PositionExcluder.excludePositionsOutOfBoardInPlace(possibleTakes)
+    PositionExclude.excludePositionsOutOfBoardInPlace(possibleTakes)
     return possibleTakes
   }
 
-  private fun getLeftUpPossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getLeftUpPossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
     val startRowIndex = piece.boardPosition.rowIndex - 1
     val startColumnIndex = piece.boardPosition.columnIndex - 1
@@ -65,13 +64,12 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     return possibleTakes
   }
 
-  private fun getRightUpPossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getRightUpPossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
     val startRowIndex = piece.boardPosition.rowIndex - 1
     val startColumnIndex = piece.boardPosition.columnIndex + 1
     (0 until 8).forEachIndexed { step, shift ->
-      if (step >= piece.maxTakeSteps()
-      ) {
+      if (step >= piece.maxTakeSteps()) {
         return possibleTakes
       }
       val nextValidRightUpPosition =
@@ -89,7 +87,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     return possibleTakes
   }
 
-  private fun getLeftDownPossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getLeftDownPossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleTakes = mutableSetOf<BoardPosition>()
     val startRowIndex = piece.boardPosition.rowIndex + 1
     val startColumnIndex = piece.boardPosition.columnIndex - 1
@@ -112,7 +110,7 @@ class DiagonalTakeChecker(private val chessBoard: ChessBoard) : TakeChecker {
     return possibleTakes
   }
 
-  private fun getRightDownPossibleMoves(piece: Piece): Set<BoardPosition> {
+  private fun getRightDownPossibleMoves(piece: Piece, chessBoard: ChessBoard): Set<BoardPosition> {
     val possibleMoves = mutableSetOf<BoardPosition>()
     val startRowIndex = piece.boardPosition.rowIndex + 1
     val startColumnIndex = piece.boardPosition.columnIndex + 1
