@@ -84,7 +84,7 @@ class MainViewModel(
       ::updateBoard,
       ::onGameFinished,
     )
-    engine = GameEngine(topSide, board, possibleMovesCalculator)
+    engine = GameEngine(topSide, 1, board, possibleMovesCalculator)
     if (topSide == PieceSide.WHITE) {
       updateBoard(board)
       performEngineMove()

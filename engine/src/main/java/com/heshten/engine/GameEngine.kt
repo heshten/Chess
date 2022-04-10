@@ -9,60 +9,96 @@ import com.heshten.core.models.pieces.*
 
 class GameEngine(
   val engineSide: PieceSide,
+  private val maxSearchDepth: Int,
   private val chessBoard: ChessBoard,
   private val possibleMovesCalculator: PossibleMovesCalculator
 ) {
 
   fun calculateNextMove(): Move {
-    val rankMap = mutableMapOf<Int, Move>()
-    chessBoard.getAllPieces().forEach { piece ->
-      if (piece.pieceSide == engineSide) {
-        val possibleMoves = possibleMovesCalculator
-          .calculatePossibleMovesForPiece(piece, chessBoard)
-        possibleMoves.forEach { possibleMovePosition ->
+//    populateMapRecursive(null, null, chessBoard, 0, maxSearchDepth)
+    return randomMove()
+  }
 
-          val allPiecesMutableSet = chessBoard.getAllPieces().toMutableSet()
-          val chessboardSnapshot = ChessBoard(allPiecesMutableSet)
-          chessboardSnapshot.selectPiece(piece)
-          chessboardSnapshot.moveSelectedPieceToPosition(possibleMovePosition)
-
-          rankMap[calculateBoardRank(chessboardSnapshot, engineSide)] =
-            Move(piece.boardPosition, possibleMovePosition)
-        }
-      }
+  private fun randomMove(): Move {
+    val resultMap = mutableSetOf<Move>()
+    val enginePieces = chessBoard.getAllPieces().filter { it.pieceSide == engineSide }
+    enginePieces.forEach { piece ->
+      val positions = possibleMovesCalculator.calculatePossibleMovesForPiece(piece, chessBoard)
+      resultMap.addAll(positions.map { Move(piece.boardPosition, it) })
     }
-
-    var topRankMove = rankMap.entries.first()
-    rankMap.entries.forEach { entry ->
-      if (entry.key > topRankMove.key) topRankMove = entry
-    }
-    // simulate "thinking"
-    Thread.sleep(200)
-    return topRankMove.value
+    return resultMap.random()
   }
 
   private fun calculateBoardRank(chessBoard: ChessBoard, side: PieceSide): Int {
     // find all possible attacks
-    val currentPiecesUnderAttack = calculatePiecesUnderAttack(chessBoard, side)
-    val oppositePiecesUnderAttack = calculatePiecesUnderAttack(chessBoard, side.opposite())
+    val currentPiecesUnderAttack = findPiecesUnderAttack(chessBoard, side)
+    val oppositePiecesUnderAttack = findPiecesUnderAttack(chessBoard, side.opposite())
     var rank = 0
     currentPiecesUnderAttack.forEach { piece -> rank -= getPieceRank(piece) }
     oppositePiecesUnderAttack.forEach { piece -> rank += getPieceRank(piece) }
     return rank
   }
 
-  private fun calculatePiecesUnderAttack(chessBoard: ChessBoard, side: PieceSide): Set<Piece> {
-    val pieces = chessBoard.getAllPieces().filter { it.pieceSide == side }.toSet()
+  private fun populateMapRecursive(
+    engineMove: Move?,
+    oppositeMove: Move?,
+    chessBoard: ChessBoard,
+    depth: Int,
+    maxDepth: Int
+  ) {
+    if (engineMove != null && oppositeMove != null) {
+      val rankForEngine = calculateBoardRank(chessBoard, engineSide)
+      val rankForOpposite = calculateBoardRank(chessBoard, engineSide.opposite())
+      // todo:
+      // create and populate the graph during search with each move and represented rank
+      // so that after graph traversing pick better move for engine.
+    }
+    if (depth >= maxDepth) {
+      return
+    }
+    val chessBoardSnapshot = ChessBoard(chessBoard.getAllPieces())
+
+    chessBoardSnapshot.getAllPieces().filter { it.pieceSide == engineSide }.forEach { enginePiece ->
+      val possibleEngineMoves = possibleMovesCalculator
+        .calculatePossibleMovesForPiece(enginePiece, chessBoardSnapshot)
+
+      possibleEngineMoves.forEach { possibleEngineMovePosition ->
+        val snapshot1 = ChessBoard(chessBoard.getAllPieces())
+        val performedEngineMove =
+          Move(enginePiece.boardPosition, possibleEngineMovePosition)
+        snapshot1.selectPiece(enginePiece)
+        snapshot1.moveSelectedPieceToPosition(possibleEngineMovePosition)
+
+        snapshot1.getAllPieces().filter { it.pieceSide != engineSide }.forEach { oppositePiece ->
+          val possibleOppositeMoves = possibleMovesCalculator
+            .calculatePossibleMovesForPiece(oppositePiece, snapshot1)
+
+          possibleOppositeMoves.forEach { possibleOppositeMovePosition ->
+            val snapshot2 = ChessBoard(snapshot1.getAllPieces())
+            val performedOppositeMove =
+              Move(oppositePiece.boardPosition, possibleOppositeMovePosition)
+            snapshot2.selectPiece(oppositePiece)
+            snapshot2.moveSelectedPieceToPosition(possibleOppositeMovePosition)
+
+            populateMapRecursive(
+              performedEngineMove,
+              performedOppositeMove,
+              snapshot2,
+              depth + 1,
+              maxSearchDepth
+            )
+          }
+        }
+      }
+    }
+  }
+
+  private fun findPiecesUnderAttack(chessBoard: ChessBoard, side: PieceSide): Set<Piece> {
+    val pieces = chessBoard.getAllPieces().filter { it.pieceSide != side }
     val piecesUnderAttack = mutableSetOf<Piece>()
     pieces.forEach { piece ->
-      val possibleMoves = possibleMovesCalculator
-        .calculatePossibleMovesForPiece(piece, chessBoard)
-      possibleMoves.forEach { movePosition ->
-        val pieceAtPosition = pieces
-          .find { it.boardPosition == movePosition }
-        if (pieceAtPosition != null) {
-          piecesUnderAttack.add(pieceAtPosition)
-        }
+      if (possibleMovesCalculator.isUnderAttack(piece, chessBoard)) {
+        piecesUnderAttack.add(piece)
       }
     }
     return piecesUnderAttack
