@@ -37,7 +37,7 @@ class Game(
 
   private fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
     chessBoard.moveSelectedPieceToPosition(boardPosition)
-    chessBoard.clearPossibleMovesPositions()
+    chessBoard.setPossibleMoves(emptySet())
     val nextMoveSide = sideMoveValidator.getCurrentSide().opposite()
     val hasNextMoves = hasNextMoves(nextMoveSide)
     if (isCheck(nextMoveSide) && !hasNextMoves) {
@@ -65,12 +65,10 @@ class Game(
 
   private fun hasNextMoves(side: PieceSide): Boolean {
     var possibleMoves = 0
-    chessBoard.getAllPieces()
-      .filter { it.pieceSide == side }
-      .forEach { piece ->
-        possibleMoves += possibleMovesCalculator
-          .calculatePossibleMovesForPiece(piece, chessBoard).size
-      }
+    chessBoard.getAllPiecesForSide(side).forEach { piece ->
+      possibleMoves += possibleMovesCalculator
+        .calculatePossibleMovesForPiece(piece, chessBoard).size
+    }
     return possibleMoves > 0
   }
 

@@ -26,8 +26,7 @@ class GameEngine(
 
   private fun randomMove(chessBoard: ChessBoard, pieceSide: PieceSide): Move {
     val resultMap = mutableSetOf<Move>()
-    val enginePieces = chessBoard.getAllPieces().filter { it.pieceSide == pieceSide }
-    enginePieces.forEach { piece ->
+    chessBoard.getAllPiecesForSide(pieceSide).forEach { piece ->
       val positions = possibleMovesCalculator.calculatePossibleMovesForPiece(piece, chessBoard)
       resultMap.addAll(positions.map { Move(piece.boardPosition, it) })
     }
@@ -36,7 +35,7 @@ class GameEngine(
 
   private fun calculateBoardRank(chessBoard: ChessBoard, side: PieceSide): Int {
     val resultMap = mutableMapOf<Piece, PieceRank>()
-    chessBoard.getAllPieces().filter { it.pieceSide == side }.forEach { piece ->
+    chessBoard.getAllPiecesForSide(side).forEach { piece ->
       resultMap[piece] = calculateRankForPiece(piece, chessBoard)
     }
     return resultMap.mapToBoardRank()
@@ -61,7 +60,7 @@ class GameEngine(
     }
     val chessBoardSnapshot = ChessBoard(chessBoard.getAllPieces())
 
-    chessBoardSnapshot.getAllPieces().filter { it.pieceSide == engineSide }.forEach { enginePiece ->
+    chessBoardSnapshot.getAllPiecesForSide(engineSide).forEach { enginePiece ->
       val possibleEngineMoves = possibleMovesCalculator
         .calculatePossibleMovesForPiece(enginePiece, chessBoardSnapshot)
 
@@ -72,7 +71,7 @@ class GameEngine(
         snapshot1.selectPiece(enginePiece)
         snapshot1.moveSelectedPieceToPosition(possibleEngineMovePosition)
 
-        snapshot1.getAllPieces().filter { it.pieceSide != engineSide }.forEach { oppositePiece ->
+        snapshot1.getAllPiecesForSide(engineSide.opposite()).forEach { oppositePiece ->
           val possibleOppositeMoves = possibleMovesCalculator
             .calculatePossibleMovesForPiece(oppositePiece, snapshot1)
 
@@ -97,9 +96,8 @@ class GameEngine(
   }
 
   private fun findPiecesUnderAttack(chessBoard: ChessBoard, side: PieceSide): Set<Piece> {
-    val pieces = chessBoard.getAllPieces().filter { it.pieceSide != side }
     val piecesUnderAttack = mutableSetOf<Piece>()
-    pieces.forEach { piece ->
+    chessBoard.getAllPiecesForSide(side.opposite()).forEach { piece ->
       if (possibleMovesCalculator.isUnderAttack(piece, chessBoard)) {
         piecesUnderAttack.add(piece)
       }

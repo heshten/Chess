@@ -2,6 +2,7 @@ package com.heshten.core.logic
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.King
 import com.heshten.core.models.pieces.Piece
 import com.heshten.core.models.pieces.Rook
@@ -22,8 +23,7 @@ class PossibleMovesCalculator(
   }
 
   fun isUnderAttack(piece: Piece, chessBoard: ChessBoard): Boolean {
-    val allPieces = chessBoard.getAllPieces()
-    allPieces.filter { it.pieceSide != piece.pieceSide }.forEach { iterationPiece ->
+    chessBoard.getAllPiecesForSide(piece.pieceSide.opposite()).forEach { iterationPiece ->
       val possibleMoves = getAllPossibleMovesAndTakes(iterationPiece, chessBoard)
       if (possibleMoves.contains(piece.boardPosition)) {
         return true
