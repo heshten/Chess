@@ -13,9 +13,13 @@ class Game(
   private val chessBoard: ChessBoard,
   private val possibleMovesCalculator: PossibleMovesCalculator,
   private val sideMoveValidator: SideMoveValidator,
-  private val redrawBoard: (ChessBoard) -> Unit,
+  private val redrawBoard: (Set<Piece>, Set<BoardPosition>) -> Unit,
   private val gameFinished: (GameResult) -> Unit
 ) {
+
+  init {
+    redrawBoardInternal()
+  }
 
   fun onPositionTouched(boardPosition: BoardPosition) {
     val pieceAtPosition = chessBoard.getPieceAtPosition(boardPosition)
@@ -31,7 +35,7 @@ class Game(
       val possibleMoves = possibleMovesCalculator.calculatePossibleMovesForPiece(piece, chessBoard)
       chessBoard.setPossibleMoves(possibleMoves)
       chessBoard.selectPiece(piece)
-      redrawBoard()
+      redrawBoardInternal()
     }
   }
 
@@ -43,19 +47,22 @@ class Game(
     if (isCheck(nextMoveSide) && !hasNextMoves) {
       // check and mate
       gameFinished.invoke(GameResult.Winner(sideMoveValidator.getCurrentSide()))
-      redrawBoard()
+      redrawBoardInternal()
     } else if (!hasNextMoves) {
       // draw
       gameFinished.invoke(GameResult.Draw)
-      redrawBoard()
+      redrawBoardInternal()
     } else {
       sideMoveValidator.changeSide()
-      redrawBoard()
+      redrawBoardInternal()
     }
   }
 
-  private fun redrawBoard() {
-    redrawBoard.invoke(chessBoard)
+  private fun redrawBoardInternal() {
+    redrawBoard.invoke(
+      chessBoard.getAllPieces(),
+      chessBoard.getPossibleMovesPositions()
+    )
   }
 
   private fun isCheck(side: PieceSide): Boolean {

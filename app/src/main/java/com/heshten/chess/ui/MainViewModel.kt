@@ -87,10 +87,8 @@ class MainViewModel(
     )
     engine = GameEngine(topSide, 1, board, possibleMovesCalculator)
     if (topSide == PieceSide.WHITE) {
-      updateBoard(board)
       performEngineMove()
     } else {
-      updateBoard(board)
       _lockBoardForUser.value = false
     }
   }
@@ -118,13 +116,13 @@ class MainViewModel(
     _gameResult.value = GameResultUIModel(result, true)
   }
 
-  private fun updateBoard(chessBoard: ChessBoard) {
+  private fun updateBoard(pieces: Set<Piece>, possibleMovePositions: Set<BoardPosition>) {
     val mutableUnitsMap = mutableMapOf<BoardPosition, BoardView.BoardUnit>()
-    chessBoard.getAllPieces().forEach { piece ->
+    pieces.forEach { piece ->
       mutableUnitsMap[piece.boardPosition] =
         BoardView.BoardUnit.Piece(false, getBitmapForPiece(piece))
     }
-    chessBoard.getPossibleMovesPositions().forEach { boardPosition ->
+    possibleMovePositions.forEach { boardPosition ->
       val existingBoardUnit = mutableUnitsMap[boardPosition]
       if (existingBoardUnit != null && existingBoardUnit is BoardView.BoardUnit.Piece) {
         mutableUnitsMap[boardPosition] = existingBoardUnit.copy(isHighlighted = true)
