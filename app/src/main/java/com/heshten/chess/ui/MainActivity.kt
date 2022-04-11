@@ -21,6 +21,7 @@ import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.PieceSide
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class MainActivity :
@@ -88,9 +89,11 @@ class MainActivity :
 
   private fun initViewModel() {
     val factory = MainViewModelFactory(
-      Executors.newSingleThreadExecutor(),
       MainThreadExecutor(),
-      mutableMapOf(), resources
+      Executors.newSingleThreadExecutor(),
+      mutableMapOf(),
+      // todo: check for potential leak
+      resources
     )
     viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
   }
@@ -120,18 +123,18 @@ class MainActivity :
   }
 
   private class MainViewModelFactory(
-    private val engineExecutor: Executor,
     private val mainThreadExecutor: Executor,
-    private val cache: MutableMap<Int, Bitmap>,
+    private val engineExecutorService: ExecutorService,
+    private val bitmapCache: MutableMap<Int, Bitmap>,
     private val resources: Resources
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
       return MainViewModel(
-        engineExecutor,
         mainThreadExecutor,
-        BlackPiecesResourceProvider(cache, resources),
-        WhitePiecesResourceProvider(cache, resources)
+        engineExecutorService,
+        BlackPiecesResourceProvider(bitmapCache, resources),
+        WhitePiecesResourceProvider(bitmapCache, resources)
       ) as T
     }
   }

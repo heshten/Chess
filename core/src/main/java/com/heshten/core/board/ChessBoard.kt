@@ -12,8 +12,9 @@ import com.heshten.core.models.pieces.Queen
  */
 class ChessBoard(pieces: Set<Piece>) {
 
-  private val possibleMovesPositions = mutableSetOf<BoardPosition>()
   private val pieces: MutableSet<Piece> = mutableSetOf()
+  private val possibleMovesPositions = mutableSetOf<BoardPosition>()
+
   private var selectedPiece: Piece? = null
 
   init {

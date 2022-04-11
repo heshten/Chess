@@ -27,10 +27,11 @@ import com.heshten.core.models.pieces.*
 import com.heshten.core.validator.SideMoveValidator
 import com.heshten.engine.GameEngine
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 
 class MainViewModel(
-  private val engineMoveExecutor: Executor,
   private val mainThreadExecutor: Executor,
+  private val engineMoveExecutorService: ExecutorService,
   private val blackPieceResourceProvider: PieceResourceProvider,
   private val whitePieceResourceProvider: PieceResourceProvider
 ) : ViewModel() {
@@ -137,7 +138,7 @@ class MainViewModel(
   private fun performEngineMove() {
     val engineLocal = engine ?: return
     _lockBoardForUser.value = true
-    engineMoveExecutor.execute {
+    engineMoveExecutorService.execute {
       val nextMove = engineLocal.calculateNextMove()
       mainThreadExecutor.execute {
         _lockBoardForUser.value = false
