@@ -1,18 +1,19 @@
 package com.heshten.chess.ui.recources
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 
 interface PieceResourceProvider {
 
-  fun getPawnBitmap(): Bitmap
+  fun getPawnBitmap(resources: Resources): Bitmap
 
-  fun getRookBitmap(): Bitmap
+  fun getRookBitmap(resources: Resources): Bitmap
 
-  fun getKnightBitmap(): Bitmap
+  fun getKnightBitmap(resources: Resources): Bitmap
 
-  fun getBishopBitmap(): Bitmap
+  fun getBishopBitmap(resources: Resources): Bitmap
 
-  fun getQueenBitmap(): Bitmap
+  fun getQueenBitmap(resources: Resources): Bitmap
 
-  fun getKingBitmap(): Bitmap
+  fun getKingBitmap(resources: Resources): Bitmap
 }

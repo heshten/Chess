@@ -1,9 +1,10 @@
 package com.heshten.chess.ui
 
+import android.app.Application
 import android.graphics.Bitmap
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.heshten.chess.ui.recources.PieceResourceProvider
 import com.heshten.chess.ui.views.BoardView
 import com.heshten.core.Game
@@ -30,11 +31,12 @@ import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 
 class MainViewModel(
+  app: Application,
   private val mainThreadExecutor: Executor,
   private val engineMoveExecutorService: ExecutorService,
   private val blackPieceResourceProvider: PieceResourceProvider,
   private val whitePieceResourceProvider: PieceResourceProvider
-) : ViewModel() {
+) : AndroidViewModel(app) {
 
   private var game: Game? = null
   private var engine: GameEngine? = null
@@ -148,14 +150,15 @@ class MainViewModel(
   }
 
   private fun getBitmapForPiece(piece: Piece): Bitmap {
+    val resources = getApplication<Application>().resources
     val resourceProvider = getResourceProviderForSide(piece.pieceSide)
     return when (piece) {
-      is Bishop -> resourceProvider.getBishopBitmap()
-      is King -> resourceProvider.getKingBitmap()
-      is Knight -> resourceProvider.getKnightBitmap()
-      is Pawn -> resourceProvider.getPawnBitmap()
-      is Queen -> resourceProvider.getQueenBitmap()
-      is Rook -> resourceProvider.getRookBitmap()
+      is Bishop -> resourceProvider.getBishopBitmap(resources)
+      is King -> resourceProvider.getKingBitmap(resources)
+      is Knight -> resourceProvider.getKnightBitmap(resources)
+      is Pawn -> resourceProvider.getPawnBitmap(resources)
+      is Queen -> resourceProvider.getQueenBitmap(resources)
+      is Rook -> resourceProvider.getRookBitmap(resources)
       else -> throw IllegalArgumentException()
     }
   }

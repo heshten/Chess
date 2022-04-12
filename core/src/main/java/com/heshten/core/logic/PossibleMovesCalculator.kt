@@ -2,6 +2,7 @@ package com.heshten.core.logic
 
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.Move
 import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.King
 import com.heshten.core.models.pieces.Piece
@@ -40,8 +41,7 @@ class PossibleMovesCalculator(
     mutableSet.toSet().forEach { boardPosition ->
       val originPieces = chessBoard.getAllPieces().toMutableSet()
       val chessBoardSnapshot = ChessBoard(originPieces)
-      chessBoardSnapshot.selectPiece(piece)
-      chessBoardSnapshot.moveSelectedPieceToPosition(boardPosition)
+      chessBoardSnapshot.doMove(Move(piece, piece.boardPosition, boardPosition))
       val king = chessBoardSnapshot.getAllPieces()
         .first { it is King && it.pieceSide == piece.pieceSide }
       if (isUnderAttack(king, chessBoardSnapshot)) {
@@ -99,10 +99,8 @@ class PossibleMovesCalculator(
           val chessboardSnapshot = ChessBoard(chessBoard.getAllPieces())
           val king = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 4))!!
           val rook = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 7))!!
-          chessboardSnapshot.selectPiece(king)
-          chessboardSnapshot.moveSelectedPieceToPosition(BoardPosition(row, 6))
-          chessboardSnapshot.selectPiece(rook)
-          chessboardSnapshot.moveSelectedPieceToPosition(BoardPosition(row, 5))
+          chessboardSnapshot.doMove(Move(king, king.boardPosition, BoardPosition(row, 6)))
+          chessboardSnapshot.doMove(Move(rook, rook.boardPosition, BoardPosition(row, 5)))
           val kingAfter = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 6))!!
           val rookAfter = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 5))!!
           if (
@@ -138,10 +136,8 @@ class PossibleMovesCalculator(
           val chessboardSnapshot = ChessBoard(chessBoard.getAllPieces())
           val king = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 4))!!
           val rook = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 0))!!
-          chessboardSnapshot.selectPiece(king)
-          chessboardSnapshot.moveSelectedPieceToPosition(BoardPosition(row, 2))
-          chessboardSnapshot.selectPiece(rook)
-          chessboardSnapshot.moveSelectedPieceToPosition(BoardPosition(row, 3))
+          chessboardSnapshot.doMove(Move(king, king.boardPosition, BoardPosition(row, 2)))
+          chessboardSnapshot.doMove(Move(rook, rook.boardPosition, BoardPosition(row, 3)))
           val kingAfter = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 2))!!
           val rookAfter = chessboardSnapshot.getPieceAtPosition(BoardPosition(row, 3))!!
           if (

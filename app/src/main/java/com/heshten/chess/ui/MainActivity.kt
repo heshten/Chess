@@ -1,6 +1,6 @@
 package com.heshten.chess.ui
 
-import android.content.res.Resources
+import android.app.Application
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
@@ -89,11 +89,11 @@ class MainActivity :
 
   private fun initViewModel() {
     val factory = MainViewModelFactory(
+      application,
       MainThreadExecutor(),
       Executors.newSingleThreadExecutor(),
       mutableMapOf(),
       // todo: check for potential leak
-      resources
     )
     viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
   }
@@ -123,18 +123,20 @@ class MainActivity :
   }
 
   private class MainViewModelFactory(
+    private val application: Application,
     private val mainThreadExecutor: Executor,
     private val engineExecutorService: ExecutorService,
-    private val bitmapCache: MutableMap<Int, Bitmap>,
-    private val resources: Resources
+    private val bitmapCache: MutableMap<Int, Bitmap>
   ) : ViewModelProvider.Factory {
 
+    @SuppressWarnings("UncheckedCast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
       return MainViewModel(
+        application,
         mainThreadExecutor,
         engineExecutorService,
-        BlackPiecesResourceProvider(bitmapCache, resources),
-        WhitePiecesResourceProvider(bitmapCache, resources)
+        BlackPiecesResourceProvider(bitmapCache),
+        WhitePiecesResourceProvider(bitmapCache)
       ) as T
     }
   }

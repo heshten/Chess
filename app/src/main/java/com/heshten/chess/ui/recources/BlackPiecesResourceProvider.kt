@@ -6,23 +6,28 @@ import android.graphics.BitmapFactory
 import com.heshten.chess.R
 
 class BlackPiecesResourceProvider(
-  private val cache: MutableMap<Int, Bitmap>,
-  private val resources: Resources
+  private val cache: MutableMap<Int, Bitmap>
 ) : PieceResourceProvider {
 
-  override fun getPawnBitmap(): Bitmap = getBitmap(R.drawable.b_pawn_png_shadow)
+  override fun getPawnBitmap(resources: Resources): Bitmap =
+    getBitmap(R.drawable.b_pawn_png_shadow, resources)
 
-  override fun getRookBitmap(): Bitmap = getBitmap(R.drawable.b_rook_png_shadow)
+  override fun getRookBitmap(resources: Resources): Bitmap =
+    getBitmap(R.drawable.b_rook_png_shadow, resources)
 
-  override fun getKnightBitmap(): Bitmap = getBitmap(R.drawable.b_knight_png_shadow)
+  override fun getKnightBitmap(resources: Resources): Bitmap =
+    getBitmap(R.drawable.b_knight_png_shadow, resources)
 
-  override fun getBishopBitmap(): Bitmap = getBitmap(R.drawable.b_bishop_png_shadow)
+  override fun getBishopBitmap(resources: Resources): Bitmap =
+    getBitmap(R.drawable.b_bishop_png_shadow, resources)
 
-  override fun getQueenBitmap(): Bitmap = getBitmap(R.drawable.b_queen_png_shadow)
+  override fun getQueenBitmap(resources: Resources): Bitmap =
+    getBitmap(R.drawable.b_queen_png_shadow, resources)
 
-  override fun getKingBitmap(): Bitmap = getBitmap(R.drawable.b_king_png_shadow)
+  override fun getKingBitmap(resources: Resources): Bitmap =
+    getBitmap(R.drawable.b_king_png_shadow, resources)
 
-  private fun getBitmap(resourceId: Int): Bitmap {
+  private fun getBitmap(resourceId: Int, resources: Resources): Bitmap {
     val cachedBitmap = cache[resourceId]
     if (cachedBitmap == null) {
       cache[resourceId] =

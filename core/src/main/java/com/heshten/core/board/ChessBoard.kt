@@ -2,6 +2,7 @@ package com.heshten.core.board
 
 import com.heshten.core.models.BoardPosition
 import com.heshten.core.models.Direction
+import com.heshten.core.models.Move
 import com.heshten.core.models.PieceSide
 import com.heshten.core.models.pieces.King
 import com.heshten.core.models.pieces.Pawn
@@ -130,6 +131,15 @@ class ChessBoard(pieces: Set<Piece>) {
     pieces.remove(selectedPieceLocal)
     pieces.add(updatedPiece)
     selectedPiece = null
+  }
+
+  fun doMove(move: Move) {
+    selectPiece(move.piece)
+    moveSelectedPieceToPosition(move.toPosition)
+  }
+
+  fun undo() {
+    TODO()
   }
 
   /**

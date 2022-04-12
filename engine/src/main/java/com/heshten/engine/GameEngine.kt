@@ -3,6 +3,7 @@ package com.heshten.engine
 import com.heshten.core.board.ChessBoard
 import com.heshten.core.logic.PossibleMovesCalculator
 import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.Move
 import com.heshten.core.models.PieceSide
 import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.Piece
@@ -28,7 +29,7 @@ class GameEngine(
     val resultMap = mutableSetOf<Move>()
     chessBoard.getAllPiecesForSide(pieceSide).forEach { piece ->
       val positions = possibleMovesCalculator.calculatePossibleMovesForPiece(piece, chessBoard)
-      resultMap.addAll(positions.map { Move(piece.boardPosition, it) })
+      resultMap.addAll(positions.map { Move(piece, piece.boardPosition, it) })
     }
     return resultMap.random()
   }
@@ -67,9 +68,8 @@ class GameEngine(
       possibleEngineMoves.forEach { possibleEngineMovePosition ->
         val snapshot1 = ChessBoard(chessBoard.getAllPieces())
         val performedEngineMove =
-          Move(enginePiece.boardPosition, possibleEngineMovePosition)
-        snapshot1.selectPiece(enginePiece)
-        snapshot1.moveSelectedPieceToPosition(possibleEngineMovePosition)
+          Move(enginePiece, enginePiece.boardPosition, possibleEngineMovePosition)
+        snapshot1.doMove(performedEngineMove)
 
         snapshot1.getAllPiecesForSide(engineSide.opposite()).forEach { oppositePiece ->
           val possibleOppositeMoves = possibleMovesCalculator
@@ -78,9 +78,8 @@ class GameEngine(
           possibleOppositeMoves.forEach { possibleOppositeMovePosition ->
             val snapshot2 = ChessBoard(snapshot1.getAllPieces())
             val performedOppositeMove =
-              Move(oppositePiece.boardPosition, possibleOppositeMovePosition)
-            snapshot2.selectPiece(oppositePiece)
-            snapshot2.moveSelectedPieceToPosition(possibleOppositeMovePosition)
+              Move(oppositePiece, oppositePiece.boardPosition, possibleOppositeMovePosition)
+            snapshot2.doMove(performedOppositeMove)
 
             populateMapRecursive(
               performedEngineMove,
@@ -164,10 +163,5 @@ class GameEngine(
     val attacks: Int,
     /** How many pieces are under protect */
     val protects: Int
-  )
-
-  data class Move(
-    val fromPosition: BoardPosition,
-    val toPosition: BoardPosition
   )
 }
