@@ -15,9 +15,6 @@ import com.heshten.core.models.pieces.Queen
 class ChessBoard(pieces: Set<Piece>) {
 
   private val pieces: MutableSet<Piece> = mutableSetOf()
-  private val possibleMovesPositions = mutableSetOf<BoardPosition>()
-
-  private var selectedPiece: Piece? = null
 
   init {
     this.pieces.addAll(pieces)
@@ -40,28 +37,6 @@ class ChessBoard(pieces: Set<Piece>) {
   }
 
   /**
-   * Returns possible movement positions.
-   * */
-  fun getPossibleMovesPositions(): Set<BoardPosition> {
-    return possibleMovesPositions
-  }
-
-  /**
-   * Sets possible movement positions.
-   * */
-  fun setPossibleMoves(positions: Set<BoardPosition>) {
-    possibleMovesPositions.clear()
-    possibleMovesPositions.addAll(positions)
-  }
-
-  /**
-   * Returns weather or not [possibleMovesPositions] contains given [BoardPosition].
-   * */
-  fun isPossibleMoveTo(position: BoardPosition): Boolean {
-    return possibleMovesPositions.contains(position)
-  }
-
-  /**
    * Checks if the chessboard has any piece at [BoardPosition].
    *
    * Warning: relays on the [getPieceAtPosition] method and depends on its runtime complexity.
@@ -71,19 +46,16 @@ class ChessBoard(pieces: Set<Piece>) {
   }
 
   /**
-   * Moves [selectedPiece] object to the specific [BoardPosition].
-   *
-   * Checks if the [selectedPiece] is [King] that is castling.
+   * Performs the specific [Move] on the given board.
    * */
-  fun moveSelectedPieceToPosition(boardPosition: BoardPosition) {
-    val selectedPieceLocal = selectedPiece ?: return
+  private fun doMoveInternal(move: Move) {
     // check if castling
-    if (selectedPieceLocal is King) {
+    if (move.piece is King) {
       if (
-        selectedPieceLocal.firstMovePerformed.not() &&
-        selectedPieceLocal.direction == Direction.UP &&
-        boardPosition.rowIndex == 7 &&
-        boardPosition.columnIndex == 6
+        move.piece.firstMovePerformed.not() &&
+        move.piece.direction == Direction.UP &&
+        move.toPosition.rowIndex == 7 &&
+        move.toPosition.columnIndex == 6
       ) {
         val castlingRook = getPieceAtPosition(BoardPosition(7, 7))!!
         val updatedRook = updatePiecePosition(castlingRook, BoardPosition(7, 5))
@@ -91,10 +63,10 @@ class ChessBoard(pieces: Set<Piece>) {
         pieces.add(updatedRook)
       }
       if (
-        selectedPieceLocal.firstMovePerformed.not() &&
-        selectedPieceLocal.direction == Direction.DOWN &&
-        boardPosition.rowIndex == 0 &&
-        boardPosition.columnIndex == 6
+        move.piece.firstMovePerformed.not() &&
+        move.piece.direction == Direction.DOWN &&
+        move.toPosition.rowIndex == 0 &&
+        move.toPosition.columnIndex == 6
       ) {
         val castlingRook = getPieceAtPosition(BoardPosition(0, 7))!!
         val updatedRook = updatePiecePosition(castlingRook, BoardPosition(0, 5))
@@ -102,10 +74,10 @@ class ChessBoard(pieces: Set<Piece>) {
         pieces.add(updatedRook)
       }
       if (
-        selectedPieceLocal.firstMovePerformed.not() &&
-        selectedPieceLocal.direction == Direction.UP &&
-        boardPosition.rowIndex == 7 &&
-        boardPosition.columnIndex == 2
+        move.piece.firstMovePerformed.not() &&
+        move.piece.direction == Direction.UP &&
+        move.toPosition.rowIndex == 7 &&
+        move.toPosition.columnIndex == 2
       ) {
         val castlingRook = getPieceAtPosition(BoardPosition(7, 0))!!
         val updatedRook = updatePiecePosition(castlingRook, BoardPosition(7, 3))
@@ -113,10 +85,10 @@ class ChessBoard(pieces: Set<Piece>) {
         pieces.add(updatedRook)
       }
       if (
-        selectedPieceLocal.firstMovePerformed.not() &&
-        selectedPieceLocal.direction == Direction.DOWN &&
-        boardPosition.rowIndex == 0 &&
-        boardPosition.columnIndex == 2
+        move.piece.firstMovePerformed.not() &&
+        move.piece.direction == Direction.DOWN &&
+        move.toPosition.rowIndex == 0 &&
+        move.toPosition.columnIndex == 2
       ) {
         val castlingRook = getPieceAtPosition(BoardPosition(0, 0))!!
         val updatedRook = updatePiecePosition(castlingRook, BoardPosition(0, 3))
@@ -124,31 +96,20 @@ class ChessBoard(pieces: Set<Piece>) {
         pieces.add(updatedRook)
       }
     }
-    if (hasPieceAtPosition(boardPosition)) {
-      pieces.remove(getPieceAtPosition(boardPosition))
+    if (hasPieceAtPosition(move.toPosition)) {
+      pieces.remove(getPieceAtPosition(move.toPosition))
     }
-    val updatedPiece = updatePiecePosition(selectedPieceLocal, boardPosition)
-    pieces.remove(selectedPieceLocal)
+    val updatedPiece = updatePiecePosition(move.piece, move.toPosition)
+    pieces.remove(move.piece)
     pieces.add(updatedPiece)
-    selectedPiece = null
   }
 
   fun doMove(move: Move) {
-    selectPiece(move.piece)
-    moveSelectedPieceToPosition(move.toPosition)
+    doMoveInternal(move)
   }
 
   fun undo() {
     TODO()
-  }
-
-  /**
-   * Sets the selected piece on the board.
-   *
-   * Could be used to perform [moveSelectedPieceToPosition] after.
-   * */
-  fun selectPiece(piece: Piece) {
-    selectedPiece = piece
   }
 
   /**
