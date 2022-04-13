@@ -17,15 +17,14 @@ import com.heshten.chess.ui.recources.BlackPiecesResourceProvider
 import com.heshten.chess.ui.recources.WhitePiecesResourceProvider
 import com.heshten.chess.ui.views.BoardView
 import com.heshten.core.Game
-import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.Move
 import com.heshten.core.models.PieceSide
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class MainActivity :
-  AppCompatActivity(R.layout.activity_main), BoardView.OnPositionTouchListener {
+  AppCompatActivity(R.layout.activity_main), BoardView.OnMoveListener {
 
   private lateinit var viewModel: MainViewModel
 
@@ -37,11 +36,11 @@ class MainActivity :
     viewModel.currentSide.observe(this, { currentSide ->
       tvSide.text = currentSide.name
     })
-    viewModel.boardUnits.observe(this, { boardUnits ->
-      boardView.submitUnits(boardUnits)
+    viewModel.boardPieces.observe(this, { boardPieces ->
+      boardView.submitBoardPieces(boardPieces)
     })
-    viewModel.lockBoardForUser.observe(this, { lockForUser ->
-      boardView.setUserInteractionAvailable(!lockForUser)
+    viewModel.boardTouchEnable.observe(this, { boardTouchEnable ->
+      boardView.setInteractionEnable(boardTouchEnable)
     })
     viewModel.gameResult.observe(this, { result ->
       if (result.showDialog) {
@@ -60,12 +59,12 @@ class MainActivity :
     })
   }
 
-  override fun onPositionTouched(boardPosition: BoardPosition) {
-    viewModel.onPositionTouched(boardPosition)
+  override fun onMove(move: Move) {
+    viewModel.doMove(move)
   }
 
   private fun setListeners() {
-    boardView.setOnPositionTouchListener(this)
+    boardView.setOnMoveListener(this)
     btnNewGameBlack.setOnClickListener {
       viewModel.startNewGame(PieceSide.BLACK)
       collapseBottomSheet()
@@ -125,7 +124,7 @@ class MainActivity :
   private class MainViewModelFactory(
     private val application: Application,
     private val mainThreadExecutor: Executor,
-    private val engineExecutorService: ExecutorService,
+    private val engineExecutor: Executor,
     private val bitmapCache: MutableMap<Int, Bitmap>
   ) : ViewModelProvider.Factory {
 
@@ -133,7 +132,7 @@ class MainActivity :
       return MainViewModel(
         application,
         mainThreadExecutor,
-        engineExecutorService,
+        engineExecutor,
         BlackPiecesResourceProvider(bitmapCache),
         WhitePiecesResourceProvider(bitmapCache)
       ) as T

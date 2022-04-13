@@ -19,7 +19,7 @@ abstract class Piece(
     direction: Direction = this.direction,
     boardPosition: BoardPosition = this.boardPosition,
     firstMovePerformed: Boolean = this.firstMovePerformed
-  ): Piece = when(this) {
+  ): Piece = when (this) {
     is Bishop -> Bishop(pieceSide, direction, boardPosition, firstMovePerformed)
     is King -> King(pieceSide, direction, boardPosition, firstMovePerformed)
     is Knight -> Knight(pieceSide, direction, boardPosition, firstMovePerformed)

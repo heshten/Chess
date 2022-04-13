@@ -10,7 +10,7 @@ import com.heshten.chess.ui.views.BoardView
 import com.heshten.core.Game
 import com.heshten.core.NewGameBoardCreator
 import com.heshten.core.board.ChessBoard
-import com.heshten.core.logic.PossibleMovesCalculator
+import com.heshten.core.board.PossibleMovesCalculator
 import com.heshten.core.logic.facedes.MoveCheckerFacade
 import com.heshten.core.logic.facedes.TakeCheckerFacade
 import com.heshten.core.logic.movecheckers.DiagonalMovesChecker
@@ -22,18 +22,18 @@ import com.heshten.core.logic.takecheckers.HorizontalTakeChecker
 import com.heshten.core.logic.takecheckers.KnightLikeTakeChecker
 import com.heshten.core.logic.takecheckers.VerticalTakeChecker
 import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.Move
 import com.heshten.core.models.PieceSide
 import com.heshten.core.models.opposite
 import com.heshten.core.models.pieces.*
 import com.heshten.core.validator.SideMoveValidator
 import com.heshten.engine.GameEngine
 import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
 
 class MainViewModel(
   app: Application,
   private val mainThreadExecutor: Executor,
-  private val engineMoveExecutorService: ExecutorService,
+  private val engineMoveExecutorService: Executor,
   private val blackPieceResourceProvider: PieceResourceProvider,
   private val whitePieceResourceProvider: PieceResourceProvider
 ) : AndroidViewModel(app) {
@@ -47,17 +47,17 @@ class MainViewModel(
   private val _gameResult = MutableLiveData<GameResultUIModel>()
   val gameResult: LiveData<GameResultUIModel> = _gameResult
 
-  private val _boardUnits = MutableLiveData<Map<BoardPosition, BoardView.BoardUnit>>()
-  val boardUnits: LiveData<Map<BoardPosition, BoardView.BoardUnit>> = _boardUnits
+  private val _boardPieces = MutableLiveData<Map<BoardPosition, BoardView.BoardPiece>>()
+  val boardPieces: LiveData<Map<BoardPosition, BoardView.BoardPiece>> = _boardPieces
 
-  private val _lockBoardForUser = MutableLiveData(true)
-  val lockBoardForUser: LiveData<Boolean> = _lockBoardForUser
+  private val _boardTouchEnable = MutableLiveData(false)
+  val boardTouchEnable: LiveData<Boolean> = _boardTouchEnable
 
   fun startNewGame(playerSide: PieceSide) {
     val topSide = playerSide.opposite()
     //di
     val newGameBoardCreator = NewGameBoardCreator()
-    val board = ChessBoard(newGameBoardCreator.createNewBoard(topSide, playerSide))
+    val piecesSnapshot = newGameBoardCreator.createNewBoard(topSide, playerSide)
     val horizontalMovesChecker = HorizontalMovesChecker()
     val knightLikeMovesChecker = KnightLikeMovesChecker()
     val verticalMovesChecker = VerticalMovesChecker()
@@ -79,19 +79,19 @@ class MainViewModel(
       knightLikeTakesChecker,
       verticalTakesChecker
     )
-    val possibleMovesCalculator = PossibleMovesCalculator(moveCheckerFacade, takeCheckerFacade)
+    val moveCalc = PossibleMovesCalculator(moveCheckerFacade, takeCheckerFacade)
+    val board = ChessBoard(piecesSnapshot, moveCalc)
     game = Game(
       board,
-      possibleMovesCalculator,
       sideValidator,
       ::updateBoard,
       ::onGameFinished,
     )
-    engine = GameEngine(topSide, 1, board, possibleMovesCalculator)
+    engine = GameEngine(topSide, 1, board)
     if (topSide == PieceSide.WHITE) {
       performEngineMove()
     } else {
-      _lockBoardForUser.value = false
+      _boardTouchEnable.value = true
     }
   }
 
@@ -102,8 +102,8 @@ class MainViewModel(
     }
   }
 
-  fun onPositionTouched(boardPosition: BoardPosition) {
-    game?.onPositionTouched(boardPosition)
+  fun doMove(move: Move) {
+    game?.doMove(move)
   }
 
   private fun onSideChanged(side: PieceSide) {
@@ -114,37 +114,28 @@ class MainViewModel(
   }
 
   private fun onGameFinished(result: Game.GameResult) {
-    _lockBoardForUser.value = true
+    _boardTouchEnable.value = false
     _gameResult.value = GameResultUIModel(result, true)
   }
 
-  private fun updateBoard(pieces: Set<Piece>, possibleMovePositions: Set<BoardPosition>) {
-    val mutableUnitsMap = mutableMapOf<BoardPosition, BoardView.BoardUnit>()
-    pieces.forEach { piece ->
-      mutableUnitsMap[piece.boardPosition] =
-        BoardView.BoardUnit.Piece(false, getBitmapForPiece(piece))
+  private fun updateBoard(boardConfig: Map<Piece, Set<Move>>) {
+    val mutableUnitsMap = mutableMapOf<BoardPosition, BoardView.BoardPiece>()
+    boardConfig.forEach { configEntry ->
+      val pieceBitmap = getBitmapForPiece(configEntry.key)
+      mutableUnitsMap[configEntry.key.boardPosition] =
+        BoardView.BoardPiece(pieceBitmap, configEntry.value)
     }
-    possibleMovePositions.forEach { boardPosition ->
-      val existingBoardUnit = mutableUnitsMap[boardPosition]
-      if (existingBoardUnit != null && existingBoardUnit is BoardView.BoardUnit.Piece) {
-        mutableUnitsMap[boardPosition] = existingBoardUnit.copy(isHighlighted = true)
-      } else {
-        mutableUnitsMap[boardPosition] = BoardView.BoardUnit.Dot
-      }
-    }
-    _boardUnits.value = mutableUnitsMap
+    _boardPieces.value = mutableUnitsMap
   }
 
   private fun performEngineMove() {
     val engineLocal = engine ?: return
-    _lockBoardForUser.value = true
+    _boardTouchEnable.value = false
     engineMoveExecutorService.execute {
-      val nextMove = engineLocal.calculateNextMove()
+      val move = engineLocal.calculateNextMove()
       mainThreadExecutor.execute {
-        _lockBoardForUser.value = false
-        // simulate the move
-        onPositionTouched(nextMove.fromPosition)
-        onPositionTouched(nextMove.toPosition)
+        doMove(move)
+        _boardTouchEnable.value = true
       }
     }
   }

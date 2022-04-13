@@ -12,12 +12,22 @@ import com.heshten.core.models.pieces.Queen
 /**
  * A board holder class that is the source of truth for the playing board.
  */
-class ChessBoard(pieces: Set<Piece>) {
+class ChessBoard(
+  pieces: Set<Piece>,
+  private val possibleMovesCalculator: PossibleMovesCalculator
+) {
+  private val pieces = mutableSetOf<Piece>()
 
-  private val pieces: MutableSet<Piece> = mutableSetOf()
+  // ugly and not a performant way of storing game history.
+  private val piecesSnapshots = mutableListOf<Set<Piece>>()
 
   init {
     this.pieces.addAll(pieces)
+    this.piecesSnapshots.add(pieces)
+  }
+
+  fun copy(): ChessBoard {
+    return ChessBoard(getAllPieces(), possibleMovesCalculator)
   }
 
   /**
@@ -46,70 +56,48 @@ class ChessBoard(pieces: Set<Piece>) {
   }
 
   /**
+   * Returns all the possible moves for given [Piece].
+   * */
+  fun getPossibleMovesForPiece(piece: Piece): Set<Move> {
+    return possibleMovesCalculator.calculatePossibleMovesForPiece(piece, this)
+  }
+
+  /**
    * Performs the specific [Move] on the given board.
    * */
   private fun doMoveInternal(move: Move) {
-    // check if castling
-    if (move.piece is King) {
-      if (
-        move.piece.firstMovePerformed.not() &&
-        move.piece.direction == Direction.UP &&
-        move.toPosition.rowIndex == 7 &&
-        move.toPosition.columnIndex == 6
-      ) {
-        val castlingRook = getPieceAtPosition(BoardPosition(7, 7))!!
-        val updatedRook = updatePiecePosition(castlingRook, BoardPosition(7, 5))
-        pieces.remove(castlingRook)
-        pieces.add(updatedRook)
+    when (move) {
+      is Move.Castling -> {
+        updateMapWithMove(move.kingMove)
+        updateMapWithMove(move.rookMove)
       }
-      if (
-        move.piece.firstMovePerformed.not() &&
-        move.piece.direction == Direction.DOWN &&
-        move.toPosition.rowIndex == 0 &&
-        move.toPosition.columnIndex == 6
-      ) {
-        val castlingRook = getPieceAtPosition(BoardPosition(0, 7))!!
-        val updatedRook = updatePiecePosition(castlingRook, BoardPosition(0, 5))
-        pieces.remove(castlingRook)
-        pieces.add(updatedRook)
-      }
-      if (
-        move.piece.firstMovePerformed.not() &&
-        move.piece.direction == Direction.UP &&
-        move.toPosition.rowIndex == 7 &&
-        move.toPosition.columnIndex == 2
-      ) {
-        val castlingRook = getPieceAtPosition(BoardPosition(7, 0))!!
-        val updatedRook = updatePiecePosition(castlingRook, BoardPosition(7, 3))
-        pieces.remove(castlingRook)
-        pieces.add(updatedRook)
-      }
-      if (
-        move.piece.firstMovePerformed.not() &&
-        move.piece.direction == Direction.DOWN &&
-        move.toPosition.rowIndex == 0 &&
-        move.toPosition.columnIndex == 2
-      ) {
-        val castlingRook = getPieceAtPosition(BoardPosition(0, 0))!!
-        val updatedRook = updatePiecePosition(castlingRook, BoardPosition(0, 3))
-        pieces.remove(castlingRook)
-        pieces.add(updatedRook)
+      is Move.Regular -> {
+        if (hasPieceAtPosition(move.toPosition)) {
+          pieces.remove(getPieceAtPosition(move.toPosition))
+        }
+        updateMapWithMove(move)
       }
     }
-    if (hasPieceAtPosition(move.toPosition)) {
-      pieces.remove(getPieceAtPosition(move.toPosition))
-    }
-    val updatedPiece = updatePiecePosition(move.piece, move.toPosition)
-    pieces.remove(move.piece)
-    pieces.add(updatedPiece)
+  }
+
+  private fun updateMapWithMove(move: Move.Regular) {
+    val pieceBeforeMove = move.piece
+    val pieceAfterMove = updatePiece(move)
+    pieces.remove(pieceBeforeMove)
+    pieces.add(pieceAfterMove)
   }
 
   fun doMove(move: Move) {
+    piecesSnapshots.add(pieces.toSet())
     doMoveInternal(move)
   }
 
   fun undo() {
-    TODO()
+    if (piecesSnapshots.size == 1) {
+      return
+    }
+    pieces.clear()
+    pieces.addAll(piecesSnapshots.removeLast())
   }
 
   /**
@@ -118,7 +106,27 @@ class ChessBoard(pieces: Set<Piece>) {
    * Warning: this method iterates through the whole collection and the runtime complexity is O(N).
    * */
   fun getPieceAtPosition(boardPosition: BoardPosition): Piece? {
-    return pieces.find { it.boardPosition == boardPosition }
+    return getAllPieces().find { it.boardPosition == boardPosition }
+  }
+
+  /**
+   * Returns weather given [PieceSide] is under check.
+   * */
+  fun isCheck(side: PieceSide): Boolean {
+    val king = getAllPiecesForSide(side).first { it is King }
+    return possibleMovesCalculator.isUnderAttack(king, this)
+  }
+
+  /**
+   * Returns weather given [PieceSide] has any move.
+   * */
+  fun hasNextMoves(side: PieceSide): Boolean {
+    var possibleMoves = 0
+    getAllPiecesForSide(side).forEach { piece ->
+      possibleMoves += getPossibleMovesForPiece(piece).size
+      if (possibleMoves > 0) return true
+    }
+    return false
   }
 
   /**
@@ -131,15 +139,18 @@ class ChessBoard(pieces: Set<Piece>) {
    *
    * @return updated [Piece] after performing given movement.
    * */
-  private fun updatePiecePosition(piece: Piece, boardPosition: BoardPosition): Piece {
+  private fun updatePiece(move: Move.Regular): Piece {
+    val piece = move.piece
+    val toPosition = move.toPosition
     if (piece is Pawn) {
       // check if reached the end of the board
-      if ((piece.direction == Direction.DOWN && boardPosition.rowIndex == 7)
-        || (piece.direction == Direction.UP && boardPosition.rowIndex == 0)
+      if (
+        (piece.direction == Direction.DOWN && toPosition.rowIndex == 7) ||
+        (piece.direction == Direction.UP && toPosition.rowIndex == 0)
       ) {
-        return Queen(piece.pieceSide, piece.direction, boardPosition, piece.firstMovePerformed)
+        return Queen(piece.pieceSide, piece.direction, toPosition, piece.firstMovePerformed)
       }
     }
-    return piece.copy(boardPosition = boardPosition, firstMovePerformed = true)
+    return piece.copy(boardPosition = toPosition, firstMovePerformed = true)
   }
 }

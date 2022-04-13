@@ -4,6 +4,9 @@ import com.heshten.core.models.BoardPosition
 
 object PositionExclude {
 
+  /**
+   * Workaround method. Must be removed.
+   * */
   fun excludePositionsOutOfBoardInPlace(target: MutableSet<BoardPosition>) {
     target.removeAll { !positionIsOnBoard(it) }
   }

@@ -11,6 +11,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.heshten.chess.R
 import com.heshten.core.models.BoardPosition
+import com.heshten.core.models.Move
 import kotlin.math.min
 
 class BoardView @JvmOverloads constructor(
@@ -22,8 +23,9 @@ class BoardView @JvmOverloads constructor(
   }
 
   private val boardSquareRect = Rect()
-  private var boardUnits = mapOf<BoardPosition, BoardUnit>()
-  private var onPositionTouchListener: OnPositionTouchListener? = null
+  private val boardUnits = mutableMapOf<BoardPosition, BoardPiece>()
+  private val possibleMoves = mutableMapOf<BoardPosition, Move>()
+  private var onMoveListener: OnMoveListener? = null
 
   private val darkSquarePaint = Paint().apply {
     color = ContextCompat.getColor(context, R.color.darkBoardSquareColor)
@@ -57,8 +59,26 @@ class BoardView @JvmOverloads constructor(
     if (event == null || event.actionMasked != MotionEvent.ACTION_UP) {
       return true
     }
+
     val touchedPosition = getBoardPositionForTouchEvent(event)
-    onPositionTouchListener?.onPositionTouched(touchedPosition)
+    val moveAtPosition = possibleMoves[touchedPosition]
+    if (moveAtPosition != null) {
+      onMoveListener?.onMove(moveAtPosition)
+      return true
+    }
+
+    val unitAtTouchedPosition = boardUnits[touchedPosition]
+    if (unitAtTouchedPosition != null) {
+      // select
+      possibleMoves.clear()
+      unitAtTouchedPosition.moves.forEach { move ->
+        when(move) {
+          is Move.Castling -> possibleMoves[move.kingMove.toPosition] = move
+          is Move.Regular -> possibleMoves[move.toPosition] = move
+        }
+      }
+      invalidate()
+    }
     return true
   }
 
@@ -79,17 +99,19 @@ class BoardView @JvmOverloads constructor(
     )
   }
 
-  fun submitUnits(units: Map<BoardPosition, BoardUnit>) {
-    boardUnits = units
+  fun submitBoardPieces(boardPieces: Map<BoardPosition, BoardPiece>) {
+    possibleMoves.clear()
+    boardUnits.clear()
+    boardUnits.putAll(boardPieces)
     invalidate()
   }
 
-  fun setOnPositionTouchListener(listener: OnPositionTouchListener) {
-    onPositionTouchListener = listener
+  fun setOnMoveListener(listener: OnMoveListener) {
+    onMoveListener = listener
   }
 
-  fun setUserInteractionAvailable(available: Boolean) {
-    setOnTouchListener(if (available) this else null)
+  fun setInteractionEnable(enable: Boolean) {
+    setOnTouchListener(if (enable) this else null)
   }
 
   private fun drawRow(canvas: Canvas, rowIndex: Int) {
@@ -97,7 +119,7 @@ class BoardView @JvmOverloads constructor(
     (0 until BOARD_SIZE).forEach { columnIndex ->
       val shiftIndex = if (isLightFirst) 0 else 1
       val iterationPosition = BoardPosition(rowIndex, columnIndex)
-      val unitAtIterationPosition = boardUnits.getOr(iterationPosition, BoardUnit.Empty)
+      val unitAtIterationPosition = boardUnits[iterationPosition]
       val squarePaint = if (columnIndex % 2 == shiftIndex) {
         lightSquarePaint
       } else {
@@ -110,22 +132,18 @@ class BoardView @JvmOverloads constructor(
       boardSquareRect.top = squareSize * rowIndex
       boardSquareRect.bottom = squareSize * rowIndex + squareSize
 
-      when (unitAtIterationPosition) {
-        BoardUnit.Empty -> {
-          drawSquare(canvas, boardSquareRect, squarePaint)
-        }
-        BoardUnit.Dot -> {
-          drawSquare(canvas, boardSquareRect, squarePaint)
+      if (unitAtIterationPosition == null) {
+        drawSquare(canvas, boardSquareRect, squarePaint)
+        if (possibleMoves.contains(iterationPosition)) {
           drawDot(canvas, boardSquareRect)
         }
-        is BoardUnit.Piece -> {
-          if (unitAtIterationPosition.isHighlighted) {
-            drawSquare(canvas, boardSquareRect, highlightedSquarePaint)
-          } else {
-            drawSquare(canvas, boardSquareRect, squarePaint)
-          }
-          drawPiece(canvas, unitAtIterationPosition.pieceBitmap, boardSquareRect)
+      } else {
+        if (possibleMoves.contains(iterationPosition)) {
+          drawSquare(canvas, boardSquareRect, highlightedSquarePaint)
+        } else {
+          drawSquare(canvas, boardSquareRect, squarePaint)
         }
+        drawPiece(canvas, unitAtIterationPosition.pieceBitmap, boardSquareRect)
       }
     }
   }
@@ -152,28 +170,13 @@ class BoardView @JvmOverloads constructor(
     return BoardPosition(rowIndex.toInt(), columnIndex.toInt())
   }
 
-  private fun Map<BoardPosition, BoardUnit>.getOr(
-    key: BoardPosition,
-    default: BoardUnit
-  ): BoardUnit {
-    return if (this.containsKey(key)) {
-      this.getValue(key)
-    } else {
-      default
-    }
-  }
+  data class BoardPiece(
+    val pieceBitmap: Bitmap,
+    val moves: Set<Move>
+  )
 
-  sealed class BoardUnit {
-    object Empty : BoardUnit()
-    object Dot : BoardUnit()
-    data class Piece(
-      val isHighlighted: Boolean,
-      val pieceBitmap: Bitmap
-    ) : BoardUnit()
-  }
+  interface OnMoveListener {
 
-  interface OnPositionTouchListener {
-
-    fun onPositionTouched(boardPosition: BoardPosition)
+    fun onMove(move: Move)
   }
 }
