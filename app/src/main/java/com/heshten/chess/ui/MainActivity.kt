@@ -73,6 +73,9 @@ class MainActivity :
       viewModel.startNewGame(PieceSide.WHITE)
       collapseBottomSheet()
     }
+    btnUndo.setOnClickListener {
+      viewModel.undo()
+    }
   }
 
   private fun setupBottomSheet() {
@@ -113,6 +116,12 @@ class MainActivity :
         .alpha(alphaScale)
         .start()
       tvSide.animate()
+        .setDuration(0)
+        .scaleX(alphaScale)
+        .scaleY(alphaScale)
+        .alpha(alphaScale)
+        .start()
+      btnUndo.animate()
         .setDuration(0)
         .scaleX(alphaScale)
         .scaleY(alphaScale)

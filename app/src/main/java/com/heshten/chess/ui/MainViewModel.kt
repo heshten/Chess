@@ -82,6 +82,7 @@ class MainViewModel(
     val moveCalc = PossibleMovesCalculator(moveCheckerFacade, takeCheckerFacade)
     val board = ChessBoard(piecesSnapshot, moveCalc)
     game = Game(
+      topSide.opposite(),
       board,
       sideValidator,
       ::updateBoard,
@@ -100,6 +101,11 @@ class MainViewModel(
     if (currentValue != null) {
       _gameResult.value = currentValue.copy(showDialog = false)
     }
+  }
+
+  fun undo() {
+    val gameLocal = game ?: return
+    gameLocal.undo()
   }
 
   fun doMove(move: Move) {

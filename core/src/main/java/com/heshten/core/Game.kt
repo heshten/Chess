@@ -8,6 +8,7 @@ import com.heshten.core.models.pieces.Piece
 import com.heshten.core.validator.SideMoveValidator
 
 class Game(
+  private val playerSide: PieceSide,
   private val chessBoard: ChessBoard,
   private val sideMoveValidator: SideMoveValidator,
   private val redrawBoard: (Map<Piece, Set<Move>>) -> Unit,
@@ -32,6 +33,21 @@ class Game(
       redrawBoardInternal()
     } else {
       sideMoveValidator.changeSide()
+      redrawBoardInternal()
+    }
+  }
+
+  fun undo() {
+    if (playerSide == sideMoveValidator.getCurrentSide()) {
+      if (
+        !chessBoard.hasNextMoves(playerSide) ||
+        !chessBoard.hasNextMoves(playerSide.opposite())
+      ) {
+        // undo after game has finished is not allowed.
+        return
+      }
+      chessBoard.undo()
+      chessBoard.undo()
       redrawBoardInternal()
     }
   }
