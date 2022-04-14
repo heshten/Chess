@@ -68,8 +68,15 @@ class GameEngine(
     val mobility = mutableSetOf<Move>()
     val possibleMoves = chessBoard.getPossibleMovesForPiece(piece)
     possibleMoves.forEach { move ->
-      if (move is Move.Regular && !chessBoard.hasPieceAtPosition(move.toPosition)) {
-        mobility.add(move)
+      when (move) {
+        is Move.Castling -> {
+          // todo
+        }
+        is Move.Regular -> {
+          if (!chessBoard.hasPieceAtPosition(move.toPosition)) {
+            mobility.add(move)
+          }
+        }
       }
     }
     return mobility
@@ -79,8 +86,15 @@ class GameEngine(
     val attacks = mutableSetOf<Piece>()
     val possibleMoves = chessBoard.getPossibleMovesForPiece(piece)
     possibleMoves.forEach { move ->
-      if (move is Move.Regular && chessBoard.hasPieceAtPosition(move.toPosition)) {
-        attacks.add(chessBoard.getPieceAtPosition(move.toPosition)!!)
+      when (move) {
+        is Move.Castling -> {
+          // todo
+        }
+        is Move.Regular -> {
+          if (chessBoard.hasPieceAtPosition(move.toPosition)) {
+            attacks.add(chessBoard.getPieceAtPosition(move.toPosition)!!)
+          }
+        }
       }
     }
     return attacks
