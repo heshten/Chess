@@ -81,7 +81,7 @@ class MainViewModel(
     )
     val moveCalc = PossibleMovesCalculator(moveCheckerFacade, takeCheckerFacade)
     val board = ChessBoard(piecesSnapshot, moveCalc)
-    engine = GameEngine(topSide, 1, board)
+    engine = GameEngine(topSide, 2, board)
     game = Game(
       playerSide,
       board,
