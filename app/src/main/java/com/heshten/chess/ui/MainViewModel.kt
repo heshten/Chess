@@ -66,7 +66,7 @@ class MainViewModel(
     val knightLikeTakesChecker = KnightLikeTakeChecker()
     val verticalTakesChecker = VerticalTakeChecker()
     val diagonalTakesChecker = DiagonalTakeChecker()
-    val sideValidator = SideMoveValidator(::onSideChanged)
+    val sideValidator = SideMoveValidator()
     val moveCheckerFacade = MoveCheckerFacade(
       horizontalMovesChecker,
       verticalMovesChecker,
@@ -81,19 +81,15 @@ class MainViewModel(
     )
     val moveCalc = PossibleMovesCalculator(moveCheckerFacade, takeCheckerFacade)
     val board = ChessBoard(piecesSnapshot, moveCalc)
+    engine = GameEngine(topSide, 1, board)
     game = Game(
-      topSide.opposite(),
+      playerSide,
       board,
       sideValidator,
+      ::performMoveForSide,
       ::updateBoard,
       ::onGameFinished,
     )
-    engine = GameEngine(topSide, 1, board)
-    if (topSide == PieceSide.WHITE) {
-      performEngineMove()
-    } else {
-      _boardTouchEnable.value = true
-    }
   }
 
   fun clearResultShowFlag() {
@@ -103,19 +99,19 @@ class MainViewModel(
     }
   }
 
-  fun undo() {
-    val gameLocal = game ?: return
-    gameLocal.undo()
-  }
-
   fun doMove(move: Move) {
     game?.doMove(move)
   }
 
-  private fun onSideChanged(side: PieceSide) {
-    _currentSide.value = side
+  fun undo() {
+    game?.undo()
+  }
+
+  private fun performMoveForSide(side: PieceSide) {
     if (side == engine?.engineSide) {
       performEngineMove()
+    } else {
+      _boardTouchEnable.value = true
     }
   }
 
@@ -124,14 +120,15 @@ class MainViewModel(
     _gameResult.value = GameResultUIModel(result, true)
   }
 
-  private fun updateBoard(boardConfig: Map<Piece, Set<Move>>) {
+  private fun updateBoard(redrawModel: Game.RedrawModel) {
     val mutableUnitsMap = mutableMapOf<BoardPosition, BoardView.BoardPiece>()
-    boardConfig.forEach { configEntry ->
+    redrawModel.chessBoardData.forEach { configEntry ->
       val pieceBitmap = getBitmapForPiece(configEntry.key)
       mutableUnitsMap[configEntry.key.boardPosition] =
         BoardView.BoardPiece(pieceBitmap, configEntry.value)
     }
     _boardPieces.value = mutableUnitsMap
+    _currentSide.value = redrawModel.currentMoveSide
   }
 
   private fun performEngineMove() {
@@ -139,16 +136,16 @@ class MainViewModel(
     _boardTouchEnable.value = false
     engineMoveExecutorService.execute {
       val move = engineLocal.calculateNextMove()
-      mainThreadExecutor.execute {
-        doMove(move)
-        _boardTouchEnable.value = true
-      }
+      mainThreadExecutor.execute { doMove(move) }
     }
   }
 
   private fun getBitmapForPiece(piece: Piece): Bitmap {
     val resources = getApplication<Application>().resources
-    val resourceProvider = getResourceProviderForSide(piece.pieceSide)
+    val resourceProvider = when (piece.pieceSide) {
+      PieceSide.WHITE -> whitePieceResourceProvider
+      PieceSide.BLACK -> blackPieceResourceProvider
+    }
     return when (piece) {
       is Bishop -> resourceProvider.getBishopBitmap(resources)
       is King -> resourceProvider.getKingBitmap(resources)
@@ -157,13 +154,6 @@ class MainViewModel(
       is Queen -> resourceProvider.getQueenBitmap(resources)
       is Rook -> resourceProvider.getRookBitmap(resources)
       else -> throw IllegalArgumentException()
-    }
-  }
-
-  private fun getResourceProviderForSide(side: PieceSide): PieceResourceProvider {
-    return when (side) {
-      PieceSide.WHITE -> whitePieceResourceProvider
-      PieceSide.BLACK -> blackPieceResourceProvider
     }
   }
 

@@ -11,12 +11,14 @@ class Game(
   private val playerSide: PieceSide,
   private val chessBoard: ChessBoard,
   private val sideMoveValidator: SideMoveValidator,
-  private val redrawBoard: (Map<Piece, Set<Move>>) -> Unit,
+  private val performMoveForSide: (PieceSide) -> Unit,
+  private val redrawBoard: (RedrawModel) -> Unit,
   private val gameFinished: (GameResult) -> Unit
 ) {
 
   init {
     redrawBoardInternal()
+    performMoveForSide.invoke(sideMoveValidator.getCurrentSide())
   }
 
   fun doMove(move: Move) {
@@ -34,6 +36,8 @@ class Game(
     } else {
       sideMoveValidator.changeSide()
       redrawBoardInternal()
+      // next move is allowed
+      performMoveForSide.invoke(sideMoveValidator.getCurrentSide())
     }
   }
 
@@ -61,8 +65,13 @@ class Game(
         emptySet()
       }
     }
-    redrawBoard.invoke(result)
+    redrawBoard.invoke(RedrawModel(result, sideMoveValidator.getCurrentSide()))
   }
+
+  data class RedrawModel(
+    val chessBoardData: Map<Piece, Set<Move>>,
+    val currentMoveSide: PieceSide
+  )
 
   sealed class GameResult {
     object Draw : GameResult()
